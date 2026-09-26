@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+.temp/
+data/.study.lock
+.study-*.tmp
+*.exe
+*.out
