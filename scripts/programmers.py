@@ -86,7 +86,7 @@ def _open_url(url: str):
     opener = urllib.request.build_opener(_RestrictedRedirectHandler(url))
     request = urllib.request.Request(
         url,
-        headers={"User-Agent": "algo-coach/1.0 (+local-study-tool)"},
+        headers={"User-Agent": "algorithm-coach/1.0 (+local-study-tool)"},
     )
     return opener.open(request, timeout=15)
 

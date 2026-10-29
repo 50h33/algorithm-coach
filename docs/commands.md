@@ -1,26 +1,39 @@
 # 명령·입력 계약
 
-Python 3.9 이상, 표준 라이브러리만 사용한다. 기본 저장소는 스크립트가 있는 프로젝트다.
-`python scripts/study.py --root PATH --on YYYY-MM-DD COMMAND ...`로 별도 폴더/날짜에서
-시나리오를 확인할 수 있다. 실제 학습에서는 `--on`을 생략한다.
+Python 3.15와 표준 라이브러리만 사용한다. 기본 루트는 프로젝트 폴더다.
+Windows에서는 `py -3.15`, 다른 환경에서는 `python3.15`로 실행 버전을 명시한다.
+`--root PATH`와 테스트 전용 `--on YYYY-MM-DD`로 임시 시나리오를 실행할 수 있다.
+실제 학습에서는 `--on`을 사용하지 않는다.
 
-모든 입력 파일은 UTF-8 JSON이다. 상태 변경 명령의 `--request-id`는 영문·숫자·`_.:-`
-1–120자다. 새 대화에는 새 ID, 같은 작업의 재실행에는 같은 ID와 입력을 쓴다.
+입력 파일은 UTF-8 JSON이다. 상태 변경 명령의 `--request-id`는 영문·숫자·`_.:-`
+1–120자다. 새 사용자 발화에는 새 ID, 실패한 명령 재실행에는 같은 ID와 입력을 쓴다.
 표준 출력은 JSON, 실패는 종료 코드 1과 표준 오류의 JSON이다.
+요청 내용의 지문을 저장해 같은 언어 범위의 같은 ID와 같은 입력은 재실행으로 처리하고,
+같은 ID의 내용이 바뀌면 거부한다. 공유 `content` 요청은 공통 언어 범위에서 판정한다.
+
+## 언어 선택
+
+지원 언어는 `cpp`, `java`다. `register`에서 생략하면 `cpp`다.
+
+- `log`, `complete`, `draft`, `confirm`, `context`, `review-start`, `review-finish`는
+  해당 문제에 학습 언어가 하나면 생략할 수 있다. 둘이면 `--language`가 필요하다.
+- `resume`, `due`의 `--language`는 선택 필터다. 생략하면 언어가 표시된 전체 결과를 반환한다.
+- `content`는 공유 문제 본문을 변경하므로 `--language`를 받지 않는다.
+- 응답의 학습 항목에는 `language`가 포함된다. 언어 선택 오류는 쓰기 전에 거부한다.
 
 ## 등록·본문 보충
 
 ```powershell
-python scripts/study.py register "https://school.programmers.co.kr/learn/courses/30/lessons/42583"
-python scripts/study.py register "https://school.programmers.co.kr/learn/courses/30/lessons/42583" --no-fetch
-python scripts/study.py content programmers-42583 --input .temp/content.json --request-id body-001
+py -3.15 scripts/study.py register "https://school.programmers.co.kr/learn/courses/30/lessons/42583" --language java
+py -3.15 scripts/study.py register "https://school.programmers.co.kr/learn/courses/30/lessons/42583" --language cpp --no-fetch
+py -3.15 scripts/study.py content programmers-42583 --input .temp/content.json --request-id body-001
 ```
 
-`register --input FILE`은 사용자가 제공한 본문을 사용하여 네트워크 요청을 생략한다.
-이미 등록된 URL에는 다시 가져오거나 파일을 덮어쓰지 않는다. 보충·수정은 `content`를 쓴다.
-본문 JSON은 아래 네 필드 중 확인한 것만 담아도 된다. 모든 필드가 채워져야 완료할 수 있다.
-이미지·불완전한 HTML 등 `content_note`가 있으면 그 내용을 사용자에게 확인받아 보충한다.
-`content`는 사용자 확인을 받은 정보에만 사용하며 확인 사유를 대신 추측하지 않는다.
+`register --input FILE`은 사용자가 제공한 본문을 사용하고 네트워크 조회를 생략한다.
+같은 문제·언어를 다시 등록하면 기존 항목과 소스를 보존한다. 같은 문제의 다른 언어는
+저장된 본문을 재사용하고 새 언어 학습만 만든다.
+
+본문 JSON은 아래 네 필드 중 확인한 것만 담을 수 있다. 모든 필드가 채워져야 완료할 수 있다.
 
 ```json
 {
@@ -31,13 +44,13 @@ python scripts/study.py content programmers-42583 --input .temp/content.json --r
 }
 ```
 
-페이지 파서는 문제 영역만 사용한다. 페이지 형식이 바뀌거나 로그인/연결 실패, 이미지,
-본문 누락이 있으면 `needs_content`로 남는다. 빈 항목에 값을 만들어 넣지 않는다.
+페이지 접근 실패, 로그인, 이미지 또는 본문 누락은 `needs_content`로 남긴다.
+`content_note`가 있으면 사용자가 확인한 정보만 `content`로 보충하고 빈 내용을 추측하지 않는다.
 
 ## 질문·힌트 기록
 
 ```powershell
-python scripts/study.py log programmers-42583 --input .temp/question-001.json --request-id question-001
+py -3.15 scripts/study.py log programmers-42583 --language java --input .temp/question-001.json --request-id question-001
 ```
 
 ```json
@@ -55,9 +68,8 @@ python scripts/study.py log programmers-42583 --input .temp/question-001.json --
 }
 ```
 
-`line_start`, `line_end`는 1부터 시작하는 포함 범위다. 생략하면 파일 전체를 기록한다.
-원본 또는 현재 복습 파일에서 읽은 코드 스냅샷이 이벤트에 들어간다.
-`topic`은 같은 막힘에 대해 유지한다. 다른 문제/복습 시도는 별도의 힌트 진행 상태다.
+행 범위는 1부터 시작하며 생략하면 현재 언어의 원본 또는 복습 파일 전체를 기록한다.
+도움 단계와 `topic` 진행 상태는 문제·언어·복습 시도별로 분리한다.
 
 | level | 도움 | 조건 |
 | --- | --- | --- |
@@ -69,13 +81,11 @@ python scripts/study.py log programmers-42583 --input .temp/question-001.json --
 | 5 | 전체 해설·정답 | 명시적 전체 해설 요청 + `explicit_request: true` |
 
 `issue`는 `approach`, `implementation`, `edge_case`, `full_solution`, `other` 중 하나다.
-수준은 프로그램이 단계 건너뛰기를 검사하지만, 자연어 힌트의 실제 내용·명시적 발화의
-진위는 에이전트가 책임진다. 수준 5는 명시적 요청 시 앞 단계를 생략할 수 있다.
 
-## 완료 선언
+## 완료·회고
 
 ```powershell
-python scripts/study.py complete programmers-42583 --input .temp/complete.json --request-id complete-001
+py -3.15 scripts/study.py complete programmers-42583 --language java --input .temp/complete.json --request-id complete-001
 ```
 
 ```json
@@ -86,69 +96,63 @@ python scripts/study.py complete programmers-42583 --input .temp/complete.json -
 }
 ```
 
-`status`: `unknown`, `passed`, `failed`. `unknown`의 출처는 `not_checked`다.
-나머지는 비어 있지 않은 증거가 필요하다. 로컬 예제의 출처는 `user_report` 또는
-`agent_run`, 제출 결과는 `user_report`만 허용한다. 실행 근거에는 실행 명령과 결과를
-남긴다. Python은 C++ 컴파일·실행이나 프로그래머스 제출을 대신하지 않는다.
-
-## 회고 초안·수정·확인
+`status`는 `unknown`, `passed`, `failed`다. `unknown`의 출처는 `not_checked`다.
+로컬 결과 출처는 `user_report` 또는 `agent_run`, 제출 결과 출처는 `user_report`만 허용한다.
+확인된 결과는 비어 있지 않은 근거가 필요하다. 도구는 컴파일·실행이나 제출을 대신하지 않는다.
 
 ```powershell
-python scripts/study.py draft programmers-42583 --input .temp/draft.json --request-id draft-001
+py -3.15 scripts/study.py draft programmers-42583 --language java --input .temp/draft.json --request-id draft-001
+py -3.15 scripts/study.py confirm programmers-42583 --language java --input .temp/confirm.json --request-id confirm-001
 ```
 
 ```json
 {
   "initial_approach": "학습자가 실제로 처음 시도한 접근",
   "stuck_points": ["기록에서 확인한 막힌 지점"],
-  "facts": ["코드/대화/실행 결과에서 확인한 사실"],
+  "facts": ["코드와 대화에서 확인한 사실"],
   "hypotheses": ["사용자 확인이 필요한 원인 후보"],
-  "help_received": "점검 질문 1회. 전체 해설은 보지 않음.",
+  "help_received": "점검 질문 1회",
   "correction_principle": "",
-  "review_task": {"kind": "partial", "prompt": "문제의 완료 상태를 설명하고 핵심 반복문을 빈 파일에 작성하세요."}
+  "review_task": {"kind": "partial", "prompt": "문제의 완료 상태를 설명하고 핵심 반복문을 작성하세요."}
 }
 ```
 
-`kind`: `explain`, `partial`, `counterexample`, `full`.
-전체 해설(level 5) 기록이 있으면 `full`만 허용한다. 복습 중 전체 해설을 참고한 경우도
-다음 과제부터 전체 재풀이로 전환한다. 나머지 과제는 확인된 회고에서 선택한다.
-초안은 보여준 뒤 사용자 수정을 반영해 새 요청 ID로 다시 `draft`한다. 버전이 증가하고
-이전 버전은 이력에 남는다. 사용자 확인 전에는 일정이 생성되지 않는다.
-
-```powershell
-python scripts/study.py confirm programmers-42583 --input .temp/confirm.json --request-id confirm-001
-```
+`draft`의 `review_task.kind`는 `explain`, `partial`, `counterexample`, `full` 중 하나다.
+전체 해설(level 5)을 참고했다면 `full`만 허용한다. 초안을 실제로 보여주고 수정 요청은
+새 요청 ID로 다시 기록한다.
 
 ```json
 {
   "draft_version": 1,
-  "principle": "다음에 비슷한 문제를 만나면, 코드를 쓰기 전에 완료 상태부터 확인하겠다.",
-  "confirmation": "초안 확인했어. 이 원칙으로 저장해줘."
+  "principle": "다음에 비슷한 문제를 만나면 완료 상태부터 확인하겠다.",
+  "confirmation": "이 초안을 확인했어."
 }
 ```
 
-현재 버전의 사용자 확인 발화와 사용자 자신의 교정 원칙이 필요하다.
-초기 복습일은 **완료 선언일 + 1일**이다. 확정이 늦으면 이미 연체일 수 있다.
+회고 JSON 형식과 도움 단계 규칙은 언어와 무관하며 회고 버전·승인·일정은 언어별이다.
+초기 복습일은 해당 언어의 완료 선언일 + 1일이다.
 
-## 복습·새 세션
+## 복습·재개
 
 ```powershell
-python scripts/study.py due
-python scripts/study.py review-start programmers-42583
-python scripts/study.py resume programmers-42583
-python scripts/study.py context programmers-42583
-python scripts/study.py review-finish programmers-42583 --input .temp/result.json --request-id review-001-result
+py -3.15 scripts/study.py due
+py -3.15 scripts/study.py due --language java
+py -3.15 scripts/study.py resume programmers-42583
+py -3.15 scripts/study.py resume programmers-42583 --language cpp
+py -3.15 scripts/study.py review-start programmers-42583 --language java
+py -3.15 scripts/study.py context programmers-42583 --language java
+py -3.15 scripts/study.py review-finish programmers-42583 --language java --input .temp/result.json --request-id review-001-result
 ```
 
-`due`는 제목·기한·연체 일수·진행 여부만 반환한다. `review-start`는 과제, 문제 경로와
-새 복습 파일을 반환한다. 기존 진행 중인 시도가 있으면 같은 파일을 반환한다.
-`resume`은 미완료 상태, 증거, 일정, 현재 시도와 경로를 반환하고 생성 문서를 복구한다.
-기존 힌트·정답은 출력하지 않는다. 일반 풀이 재개 시 에이전트가 로그를 읽고,
-복습 재개 시 현재 복습 파일과 과제만 사용한다.
+`due`는 언어, 제목, 기한, 연체 일수, 진행 여부만 반환한다. `resume`은 생성 문서를 복구하고
+언어별 상태와 경로를 반환한다. 두 명령은 코드와 도움 본문을 반환하지 않는다.
 
-`context`는 **질문을 받은 후에만** 실행한다. 현재 풀이 또는 현재 복습 시도의 질문·힌트·
-당시 코드 스냅샷을 반환해 새 세션에서 도움 단계를 이어간다. 복습 중에는 원본 풀이와
-이전 복습 시도의 도움 이력을 제외한다. `due`, `review-start`, `resume`은 도움 본문을 출력하지 않는다.
+`review-start`는 현재 언어의 과제와 새 복습 파일을 반환하며 진행 중이면 같은 파일을 반환한다.
+C++ 파일은 `cpp/reviews/attempt-NNN.cpp`, Java 파일은
+`java/reviews/attempt-NNN/Solution.java`다. 기존 v1 C++ 항목은 원래 경로를 유지한다.
+
+`context`는 질문을 받은 뒤에만 실행한다. 현재 언어와 현재 풀이 또는 복습 시도의 도움
+이력만 반환한다. 원본·다른 언어·이전 복습의 코드와 힌트를 섞지 않는다.
 
 ```json
 {
@@ -156,34 +160,43 @@ python scripts/study.py review-finish programmers-42583 --input .temp/result.jso
   "success": true,
   "hint_used": false,
   "source": "user_report",
-  "evidence": "기존 코드와 힌트 없이 핵심 반복문을 다시 작성했다고 사용자가 보고함."
+  "evidence": "기존 코드와 힌트 없이 다시 구현했다고 사용자가 보고함."
 }
 ```
 
-`source`: `user_report` 또는 실제 평가에 근거한 `agent_observed`.
-해당 복습에 기록된 힌트가 있으면 `hint_used: false`를 입력해도 사용한 것으로 처리한다.
-외부 힌트·해설 사용도 `hint_used: true`로 알려야 한다.
-독립 성공 시 실제 복습 완료일 기준 3일 → 7일 → 14일 → 14일 반복.
-실패하거나 도움을 받으면 다음 날, 단계 0으로 초기화한다.
-`independent_successes`는 과제 성공 횟수, `independent_full_successes`는 그중 전체
-재풀이 성공 횟수다. 부분 재구현 성공을 전체 문제의 독립 재풀이 성공으로 표시하지 않는다.
+복습 중 에이전트 힌트, 외부 해설, 템플릿 또는 다른 언어 풀이를 실제로 참고했다면
+`hint_used: true`다. 독립 성공 일정은 3일 → 7일 → 14일 → 14일이고 실패 또는 도움
+사용 시 다음 날과 단계 0으로 돌아간다.
+`source`는 사용자 보고인 `user_report` 또는 실제 평가에 근거한 `agent_observed`다.
+해당 언어의 현재 복습 시도에 힌트 기록이 있으면 입력이 `hint_used: false`여도 도움을
+사용한 것으로 처리한다. 부분 과제의 독립 성공과 전체 재풀이의 독립 성공 횟수는 구분한다.
+
+## v1 전환
+
+```powershell
+py -3.15 scripts/study.py migrate --dry-run
+py -3.15 scripts/study.py migrate
+```
+
+`--dry-run`은 전환 가능 여부와 대상만 보여주고 쓰지 않는다. `migrate`는 잠금 아래에서
+v1 검증, `data/index.v1.backup.json` 배타적 백업, v2 변환·검증, 원자적 저장 순서로 처리한다.
+기존 C++ 학습과 이벤트는 `cpp`로 분류하고 기존 소스·문서 경로는 옮기지 않는다.
+
+일반 명령은 v1을 몰래 전환하지 않는다. 먼저 명시적 전환을 안내한다. v2에 다시 실행하면
+변경 없이 완료하고 기존 백업 내용이 다르면 덮어쓰지 않는다.
 
 ## 저장·검증·복구
 
 ```powershell
-python scripts/study.py validate
-python scripts/study.py resume
-python -m unittest discover -s tests -v
+py -3.15 scripts/study.py validate
+py -3.15 -m unittest discover -s tests -v
 ```
 
-- JSON 로드/저장 모두 스키마·상태를 검증하고, 중복 키·NaN·잘못된 날짜를 거부한다.
-- OS 파일 잠금으로 동시 변경을 차단한다. 다른 실행 중이면 그 실행이 끝난 뒤 재실행한다.
-  프로세스 종료 시 잠금은 OS가 해제하므로 남은 `.study.lock`을 지울 필요가 없다.
-- 같은 폴더의 임시 파일에 쓴 뒤 `flush`/`fsync`/`os.replace`로 인덱스를 교체한다.
-  인덱스 커밋 뒤 Markdown이 중단되면 `resume`이 JSON 이력에서 재생성한다.
-- JSON이 손상되면 자동 초기화하지 않는다. 작업을 멈추고 백업을 복구해야 한다.
-  `data/`와 `problems/`를 함께 백업한다. 자동 백업/동기화 기능은 없다.
-- Markdown은 생성 결과이므로 직접 편집한 내용을 보존하지 않는다. 회고 수정은
-  확인 전 `draft`, 본문 보충은 `content`, 새 질문은 `log`로 누적한다.
-- 복습 파일 경로 충돌 시 기존 파일을 덮어쓰거나 지우지 않고 오류로 멈춘다.
-  기록 없는 기존 파일의 출처를 먼저 확인한다.
+`validate`는 v1과 v2의 스키마·상태 불변식을 검사하고 중복 JSON 키, NaN, 잘못된 날짜와
+증거 조합을 거부한다. 상태 변경은 OS 파일 잠금으로 직렬화하고 같은 폴더의 임시 파일에
+쓴 뒤 `flush`, `fsync`, 원자적 교체를 사용한다. 인덱스 저장 뒤 문서 생성만 실패하면
+`resume`으로 재생성한다.
+
+JSON 이력이 저장 원본이고 Markdown은 재생성 가능한 결과다. Markdown 직접 수정은 다음
+동기화에서 보존되지 않는다. `data/`와 `problems/`를 함께 백업한다. 소스와 사용자 템플릿은
+덮어쓰지 않으며 충돌한 경로가 있으면 보존한 채 중단한다.

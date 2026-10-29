@@ -114,7 +114,7 @@ class EndToEndTests(CoachCase):
 
     def test_registration_hint_completion_and_retrospective_preserve_evidence_sources(self):
         coach = self.register()
-        solution = self.root / "problems" / PID / "solution.cpp"
+        solution = self.root / "problems" / PID / "cpp" / "solution.cpp"
         solution.write_text("int solution() {\n    return 0;\n}\n", encoding="utf-8")
         coach.apply(PID, "hint", "hint-1", hint())
         result = coach.apply(PID, "completion", "complete-1", completion(
@@ -130,19 +130,19 @@ class EndToEndTests(CoachCase):
             "confirmation": "수정본을 확인했다.",
         })
 
-        state = self.load()["problems"][PID]
+        state = self.load()["problems"][PID]["studies"]["cpp"]
         self.assertEqual("review", result["phase"])
         self.assertEqual("agent_run", state["completion"]["local_examples"]["source"])
         self.assertEqual("user_report", state["completion"]["submission"]["source"])
         self.assertEqual(2, state["approved"]["version"])
         self.assertEqual("2026-01-02", state["schedule"]["due"])
-        log = (self.root / "problems" / PID / "learning-log.md").read_text(encoding="utf-8")
+        log = (self.root / "problems" / PID / "cpp" / "learning-log.md").read_text(encoding="utf-8")
         self.assertIn("확인된 사실", log)
         self.assertIn("원인 후보 (추정)", log)
 
     def test_first_due_uses_completion_day_instead_of_late_confirmation_day(self):
         self.approve(completed_on="2026-01-01", confirmed_on="2026-01-05")
-        self.assertEqual("2026-01-02", self.load()["problems"][PID]["schedule"]["due"])
+        self.assertEqual("2026-01-02", self.load()["problems"][PID]["studies"]["cpp"]["schedule"]["due"])
         due = self.coach("2026-01-05").due()["items"][0]
         self.assertEqual(3, due["overdue_days"])
 
@@ -157,10 +157,10 @@ class EndToEndTests(CoachCase):
         for attempt, (actual, next_due, stage) in enumerate(expected, 1):
             self.coach(actual).review_start(PID)
             self.finish_review(actual, attempt)
-            schedule = self.load()["problems"][PID]["schedule"]
+            schedule = self.load()["problems"][PID]["studies"]["cpp"]["schedule"]
             self.assertEqual(next_due, schedule["due"])
             self.assertEqual(stage, schedule["stage"])
-        self.assertEqual(4, self.load()["problems"][PID]["schedule"]["independent_successes"])
+        self.assertEqual(4, self.load()["problems"][PID]["studies"]["cpp"]["schedule"]["independent_successes"])
 
     def test_hint_or_failure_resets_interval_then_independent_success_gets_three_days(self):
         self.approve()
@@ -170,24 +170,24 @@ class EndToEndTests(CoachCase):
         self.coach("2026-01-05").review_start(PID)
         self.coach("2026-01-05").apply(PID, "hint", "review-hint", hint())
         self.finish_review("2026-01-05", 2, success=True, hint_used=False)
-        schedule = self.load()["problems"][PID]["schedule"]
+        schedule = self.load()["problems"][PID]["studies"]["cpp"]["schedule"]
         self.assertEqual(("2026-01-06", 0), (schedule["due"], schedule["stage"]))
 
         self.coach("2026-01-06").review_start(PID)
         self.finish_review("2026-01-06", 3, success=False)
-        schedule = self.load()["problems"][PID]["schedule"]
+        schedule = self.load()["problems"][PID]["studies"]["cpp"]["schedule"]
         self.assertEqual(("2026-01-07", 0), (schedule["due"], schedule["stage"]))
 
         self.coach("2026-01-07").review_start(PID)
         self.finish_review("2026-01-07", 4)
-        schedule = self.load()["problems"][PID]["schedule"]
+        schedule = self.load()["problems"][PID]["studies"]["cpp"]["schedule"]
         self.assertEqual(("2026-01-10", 1), (schedule["due"], schedule["stage"]))
 
     def test_partial_and_full_independent_success_counts_are_separate(self):
         self.approve(kind="partial")
         self.coach("2026-01-02").review_start(PID)
         self.finish_review("2026-01-02", 1)
-        schedule = self.load()["problems"][PID]["schedule"]
+        schedule = self.load()["problems"][PID]["studies"]["cpp"]["schedule"]
         self.assertEqual((1, 0), (schedule["independent_successes"], schedule["independent_full_successes"]))
 
         other_root = self.root / "full-case"
@@ -196,7 +196,7 @@ class EndToEndTests(CoachCase):
         self.approve(kind="full")
         self.coach("2026-01-02").review_start(PID)
         self.finish_review("2026-01-02", 1)
-        schedule = self.load()["problems"][PID]["schedule"]
+        schedule = self.load()["problems"][PID]["studies"]["cpp"]["schedule"]
         self.assertEqual((1, 1), (schedule["independent_successes"], schedule["independent_full_successes"]))
 
     def test_overdue_item_stays_due_until_finished(self):
@@ -206,7 +206,7 @@ class EndToEndTests(CoachCase):
         self.assertEqual("2026-01-02", first["due"])
         self.assertEqual(8, first["overdue_days"])
         self.assertEqual(9, second["overdue_days"])
-        self.assertEqual([], self.load()["problems"][PID]["reviews"])
+        self.assertEqual([], self.load()["problems"][PID]["studies"]["cpp"]["reviews"])
 
     def test_hint_levels_cannot_skip_but_same_level_is_allowed_and_new_review_resets(self):
         coach = self.register()
@@ -254,7 +254,7 @@ class EndToEndTests(CoachCase):
 
     def test_context_is_limited_to_the_current_review_attempt(self):
         coach = self.register()
-        solution = self.root / "problems" / PID / "solution.cpp"
+        solution = self.root / "problems" / PID / "cpp" / "solution.cpp"
         solution.write_text("// ORIGINAL_CODE_SECRET\n", encoding="utf-8")
         coach.apply(PID, "hint", "original-hint", hint(
             question="ORIGINAL_QUESTION_SECRET", hint="ORIGINAL_HINT_SECRET", line_end=1))
@@ -322,7 +322,7 @@ class IdempotencyAndRecoveryTests(CoachCase):
 
     def test_duplicate_registration_preserves_existing_solution_bytes(self):
         coach = self.register()
-        solution = self.root / "problems" / PID / "solution.cpp"
+        solution = self.root / "problems" / PID / "cpp" / "solution.cpp"
         original = b"// learner bytes\r\nint main() {}\r\n"
         solution.write_bytes(original)
         result = coach.register(URL, copy.deepcopy(CONTENT))
@@ -341,7 +341,7 @@ class IdempotencyAndRecoveryTests(CoachCase):
         self.assertTrue(resumed["resumed"])
         self.assertEqual(1, resumed["attempt"])
         self.assertEqual(original, attempt.read_bytes())
-        self.assertEqual(1, len(self.load()["problems"][PID]["reviews"]))
+        self.assertEqual(1, len(self.load()["problems"][PID]["studies"]["cpp"]["reviews"]))
 
     def test_failed_fetch_persists_partial_record_and_requests_missing_content(self):
         fetched = {"title": "제목만 확인", "reason": "본문 접근 실패"}
@@ -355,7 +355,7 @@ class IdempotencyAndRecoveryTests(CoachCase):
 
     def test_replayed_hint_uses_original_snapshot_even_after_solution_changes(self):
         coach = self.register()
-        solution = self.root / "problems" / PID / "solution.cpp"
+        solution = self.root / "problems" / PID / "cpp" / "solution.cpp"
         solution.write_text("old line\nsecond\n", encoding="utf-8")
         payload = hint()
         coach.apply(PID, "hint", "same-id", payload)
@@ -401,7 +401,7 @@ class IdempotencyAndRecoveryTests(CoachCase):
         fresh = self.coach()
         fresh.resume(PID)
         self.assertTrue((self.root / "problems" / PID / "problem.md").is_file())
-        self.assertTrue((self.root / "problems" / PID / "learning-log.md").is_file())
+        self.assertTrue((self.root / "problems" / PID / "cpp" / "learning-log.md").is_file())
 
 
 class ValidationAndSafetyTests(CoachCase):
@@ -416,7 +416,7 @@ class ValidationAndSafetyTests(CoachCase):
         mutations = []
 
         bad_stage = copy.deepcopy(valid)
-        bad_stage["problems"][PID]["schedule"]["stage"] = True
+        bad_stage["problems"][PID]["studies"]["cpp"]["schedule"]["stage"] = True
         mutations.append(bad_stage)
 
         bad_content = copy.deepcopy(valid)
@@ -424,7 +424,7 @@ class ValidationAndSafetyTests(CoachCase):
         mutations.append(bad_content)
 
         bad_review_count = copy.deepcopy(valid)
-        bad_review_count["problems"][PID]["schedule"]["independent_successes"] = -1
+        bad_review_count["problems"][PID]["studies"]["cpp"]["schedule"]["independent_successes"] = -1
         mutations.append(bad_review_count)
 
         for state in mutations:
@@ -473,10 +473,10 @@ class ValidationAndSafetyTests(CoachCase):
 
     def test_cpp_paths_cannot_be_written_through_managed_document_writer(self):
         coach = self.coach()
-        with self.assertRaisesRegex(study.StudyError, "C\+\+ 파일은 보호"):
+        with self.assertRaisesRegex(study.StudyError, "파일과 템플릿은 보호"):
             coach.atomic_text(f"problems/{PID}/solution.cpp", "overwrite")
         with self.assertRaises(study.StudyError):
-            coach.create_cpp(f"problems/{PID}/reviews/../solution.cpp")
+            coach.create_source(f"problems/{PID}/cpp/reviews/../solution.cpp", "cpp")
 
     def test_symlink_in_managed_path_is_rejected(self):
         outside = self.root / "outside"
@@ -492,7 +492,7 @@ class ValidationAndSafetyTests(CoachCase):
     def test_unknown_local_and_submission_status_make_no_pass_claim(self):
         coach = self.register()
         coach.apply(PID, "completion", "complete-unknown", completion())
-        stored = self.load()["problems"][PID]["completion"]
+        stored = self.load()["problems"][PID]["studies"]["cpp"]["completion"]
         for key in ("local_examples", "submission"):
             self.assertEqual("unknown", stored[key]["status"])
             self.assertEqual("not_checked", stored[key]["source"])

@@ -1,87 +1,78 @@
-# algo-coach
+# algorithm-coach
 
-VS Code에서 C++ 문제를 직접 풀면서 막힌 순간을 기록하고, 다음 공부 때 다시 구현하는
-개인용 학습 도구입니다. **사용자는 대화와 C++ 구현을, 에이전트는 힌트·회고를,
-Python은 파일 저장과 복습 일정을 담당합니다.**
+VS Code에서 C++ 또는 Java로 코딩테스트 문제를 직접 풀면서 막힌 순간을 기록하고,
+다음 공부 때 도움 없이 다시 구현하는 개인용 학습 도구입니다. 사용자는 대화와 구현을,
+에이전트는 단계별 힌트와 회고를, Python은 파일 저장과 복습 일정을 담당합니다.
 
-첫 버전은 로컬 파일만 사용합니다. 웹서버, 로그인, 외부 DB, 예약 알림과 상시 감시는 없습니다.
-프로그래머스 링크를 등록할 때만 문제 페이지를 가져옵니다.
+같은 문제를 두 언어로 풀 수 있습니다. 문제 본문은 공유하고 질문, 완료, 회고, 복습 일정은
+언어별로 독립 관리합니다. 로컬 파일만 사용하며 웹서버, 로그인, 외부 DB, 예약 알림과
+상시 감시는 없습니다. 프로그래머스 링크를 처음 등록할 때만 문제 페이지를 가져옵니다.
 
 ## 시작하기
 
-필요한 환경은 Python 3.9 이상, VS Code와 Skill을 사용할 수 있는 코딩 에이전트입니다.
-추가 Python 패키지는 없습니다. C++ 실행은 평소 사용하는 컴파일러/프로그래머스 환경을 사용합니다.
+Python 3.15, VS Code와 Skill을 사용할 수 있는 코딩 에이전트가 필요합니다.
+추가 Python 패키지는 없습니다. C++와 Java 실행은 평소 사용하는 환경을 사용합니다.
 
-1. VS Code에서 이 폴더를 엽니다.
-2. 터미널에서 아래 명령으로 환경과 빈 인덱스를 확인합니다.
-3. 이 폴더를 작업 공간으로 한 새 Codex 대화에서 `$algo-coach`로 시작합니다.
+`.python-version`에는 `3.15`를 지정합니다. 아래 Windows 명령은 `py -3.15`로 실행 버전을
+명시합니다. 다른 환경에서는 `python3.15`를 사용합니다.
 
 ```powershell
-python --version
-python scripts/study.py validate
+py -3.15 --version
+py -3.15 scripts/study.py validate
 ```
 
+새 Codex 대화에서 언어와 링크를 함께 말하면 됩니다.
+
 ```text
-$algo-coach https://school.programmers.co.kr/learn/courses/30/lessons/42583 이 문제 등록해줘.
+$algorithm-coach https://school.programmers.co.kr/learn/courses/30/lessons/42583 Java로 등록해줘.
 ```
 
-Skill은 [`.agents/skills/algo-coach/SKILL.md`](.agents/skills/algo-coach/SKILL.md)에 있습니다.
-프로젝트 규칙은 [AGENTS.md](AGENTS.md)입니다. Codex의 프로젝트 Skill 경로는
-[OpenAI 공식 안내](https://learn.chatgpt.com/docs/build-skills)를 따릅니다.
-기존 대화에서 Skill이 보이지 않으면 이 폴더에서 새 대화를 시작하세요.
+명령의 `--language`는 `cpp` 또는 `java`이며 등록 시 생략하면 `cpp`입니다.
 
-문제를 등록하면 `problems/programmers-42583/solution.cpp`가 생깁니다.
-문제의 함수 서명과 구현은 직접 작성합니다. 에이전트는 질문 전에는 풀이에 개입하지 않습니다.
-페이지 접근이나 본문 확인에 실패하면 확인된 정보만 저장하고 나머지 본문을 요청합니다.
+```powershell
+py -3.15 scripts/study.py register "https://school.programmers.co.kr/learn/courses/30/lessons/42583" --language java
+```
 
-## 대화 예시
+새 C++ 풀이 파일은 `problems/programmers-42583/cpp/solution.cpp`, Java 풀이 파일은
+`problems/programmers-42583/java/Solution.java`입니다. 문제별 함수·메서드 서명과 구현은
+직접 작성합니다. 에이전트는 질문 전에는 풀이에 개입하지 않습니다.
 
-다음은 실제 사용 형식을 보여주는 예시이며, 실제 학습·제출 결과를 주장하는 기록은 아닙니다.
+Skill은 [`.agents/skills/algorithm-coach/SKILL.md`](.agents/skills/algorithm-coach/SKILL.md),
+프로젝트 규칙은 [AGENTS.md](AGENTS.md), 세부 명령은 [명령·입력 계약](docs/commands.md)에 있습니다.
+
+## 언어별 학습
+
+같은 URL을 다른 언어로 다시 등록하면 문제 본문을 재사용하고 새 언어 학습만 추가합니다.
+언어가 하나뿐인 문제는 `log`, `complete`, `draft`, `confirm`, `context`, `review-start`,
+`review-finish`에서 언어를 생략할 수 있습니다. 두 언어가 등록된 문제는 잘못된 기록을
+수정하지 않도록 `--language`를 지정해야 합니다.
+
+```powershell
+py -3.15 scripts/study.py resume programmers-42583 --language java
+py -3.15 scripts/study.py due --language cpp
+py -3.15 scripts/study.py review-start programmers-42583 --language java
+```
+
+`resume`과 `due`에서 언어를 생략하면 언어가 표시된 전체 목록을 반환합니다.
+본문 보충은 두 언어에 공통이므로 `content`에는 언어 옵션을 사용하지 않습니다.
+
+## 대화 흐름
 
 ```text
-나: $algo-coach https://school.programmers.co.kr/learn/courses/30/lessons/42583 등록해줘.
-AI: 문제를 등록했어요. problems/programmers-42583/solution.cpp에서 직접 작성하면 됩니다.
+나: $algorithm-coach 문제 링크를 Java로 등록해줘.
+AI: Java 풀이를 등록했어요. java/Solution.java에서 직접 작성하면 됩니다.
 
-[페이지 접근에 실패했다면]
-AI: 링크는 등록했지만 문제 본문을 확인하지 못했어요.
-    문제 설명, 제약조건, 입출력 예를 붙여넣어 주세요.
-
-[직접 코드를 작성한 뒤]
-나: 반복문이 왜 잘못 끝나는지 모르겠어. 지금 저장한 코드의 조건을 봐줘.
-AI: 반복문이 끝나는 조건과 문제에서 요구하는 완료 상태를 각각 문장으로 적어볼까요?
-    지금 코드와 이 질문·힌트를 기록했어요.
-
-나: 수정해봤지만 아직 모르겠어. 작은 입력으로 확인하고 싶어.
-AI: 입력이 하나인 경우에, 매 반복에서 어떤 상태가 남아 있는지 직접 적어볼까요?
-
-나: C++ vector의 size()가 반환하는 건 뭐야?
-AI: 현재 저장된 원소 수예요. 반환형은 vector의 size_type입니다.
-    [문법 질문으로 기록하며 풀이 방향을 추가하지 않음]
+나: 반복문이 왜 잘못 끝나는지 모르겠어. 지금 Java 코드를 봐줘.
+AI: 반복문이 끝나는 조건과 문제의 완료 상태를 각각 문장으로 적어볼까요?
+    해당 언어의 코드와 질문·힌트를 기록했어요.
 
 나: 프로그래머스 통과했어. 정리하자.
-AI: 제출 통과는 사용자 보고로 기록했어요. 로컬 예제 결과는 아직 미확인입니다.
-    회고 초안: 처음 접근 / 막힌 지점 / 관찰한 사실 / 원인 후보 / 받은 도움 / 복습 과제 …
-    원인 후보가 맞는지 확인하고, 수정할 부분을 알려주세요.
-    “다음에 비슷한 문제를 만나면, 코드를 쓰기 전에 ______부터 확인하겠다.”도 채워주세요.
-
-나: 초안 확인했어. 완료 상태부터 확인하겠다는 원칙으로 저장해줘.
-AI: 회고를 확정했어요. 첫 복습일은 풀이 완료 다음 날입니다.
-
-[다음 날 새 대화]
-나: $algo-coach 오늘 공부 시작하자.
-AI: 기한이 된 복습이 1개 있어요. 문제의 완료 상태를 한 문장으로 설명한 뒤,
-    problems/programmers-42583/reviews/attempt-001.cpp에 핵심 반복문을 직접 작성해보세요.
-
-나: 기존 코드와 힌트 없이 다시 작성했어.
-AI: 부분 재구현의 독립 성공을 사용자 보고로 기록했어요. 다음 복습은 오늘부터 3일 뒤예요.
+AI: Java 제출 통과를 사용자 보고로 기록했어요. 회고 초안을 확인해 주세요.
 ```
 
 질문은 한 번에 한 단계만 돕습니다. 더 직접적인 도움을 요청하면 점검 질문 → 작은 반례
-→ 핵심 방향 → 의사코드 순으로 강화합니다. 전체 해설과 정답은 명시적 요청 때만
-대화로 제공하며, 기존 풀이 파일에는 쓰지 않습니다.
-
-완료 초안은 사용자 확인 전까지 미확정 상태입니다. 한 번 제출 통과, 독립적으로 복습
-과제를 수행한 성공, 전체 재풀이 성공을 따로 기록합니다.
+→ 핵심 방향 → 의사코드 순으로 강화합니다. 전체 해설과 정답은 명시적 요청 때만 대화로
+제공하며 풀이 파일에는 쓰지 않습니다.
 
 ## 복습 규칙
 
@@ -93,76 +84,76 @@ AI: 부분 재구현의 독립 성공을 사용자 보고로 기록했어요. �
 | 실패 또는 힌트 사용 | 다음 날, 간격 단계 처음부터 |
 | 기한 경과 | 완료하지 않고 다음 공부 때 다시 제시 |
 
-과제는 접근 설명, 부분 재구현, 반례 만들기, 전체 재풀이 중 회고에 맞게 선택합니다.
-전체 해설을 봤다면 전체 재풀이를 합니다. 먼저 과제를 제시하며 기존 코드·해설은 열지 않습니다.
-일정은 `Asia/Seoul` 기준입니다. 시스템에 시간대 DB가 없는 Windows에서는 현대 서울의
-UTC+09:00을 사용합니다. 2000년 이전의 역사적 시간대 계산은 지원 범위가 아닙니다.
+회고 초안은 사용자가 확인하기 전까지 미확정이며 확인 후에만 복습 일정이 생깁니다.
+한 번의 제출 통과, 부분 과제의 독립 성공, 전체 재풀이의 독립 성공은 서로 다른 상태로 기록합니다.
+템플릿이나 다른 언어의 풀이를 실제 복습에 참고했다면 도움 사용으로 기록합니다.
+복습을 시작할 때 원본 풀이, 다른 언어 풀이, 과거 힌트와 템플릿 내용은 먼저 열지 않습니다.
+일정은 `Asia/Seoul` 기준입니다. 시간대 DB가 없는 Windows에서는 현대 서울의 UTC+09:00을
+사용하며 2000년 이전의 역사적 시간대 계산은 지원하지 않습니다.
 
 ## 파일 구조
 
 ```text
-algo-coach/
+algorithm-coach/
 ├─ AGENTS.md
-├─ .agents/skills/algo-coach/SKILL.md
+├─ .agents/skills/algorithm-coach/SKILL.md
 ├─ scripts/
-│  ├─ study.py                  # 상태·기록·일정·안전한 저장
-│  └─ programmers.py            # 문제 페이지의 확인 가능한 본문 추출
-├─ data/index.json              # 문제·복습 인덱스와 누적 이벤트의 원본
-├─ docs/commands.md             # 에이전트용 명령과 JSON 입력 계약
-├─ tests/                      # 외부 네트워크 없이 검증
-└─ problems/programmers-42583/  # 등록하면 생성
+├─ data/index.json
+├─ docs/commands.md
+├─ template/
+│  ├─ README.md
+│  ├─ cpp/.gitkeep
+│  └─ java/.gitkeep
+└─ problems/programmers-42583/
    ├─ problem.md
-   ├─ solution.cpp             # 학습자가 작성
-   ├─ learning-log.md          # 질문 시점 코드·힌트·사실·가설
-   ├─ retrospective-draft.md   # 사용자 검토용 초안
-   ├─ retrospective.md         # 사용자 확인 후 생성
-   └─ reviews/attempt-001.cpp  # 복습마다 새로 생성
+   ├─ cpp/
+   │  ├─ solution.cpp
+   │  ├─ learning-log.md
+   │  └─ reviews/attempt-001.cpp
+   └─ java/
+      ├─ Solution.java
+      ├─ learning-log.md
+      └─ reviews/attempt-001/Solution.java
 ```
 
-JSON 이력이 저장 원본이며 Markdown은 그 이력에서 생성합니다. 초안 수정도 이전 버전을
-이력에 보존합니다. Markdown을 직접 수정하면 다음 동기화에서 반영되지 않으므로
-에이전트에게 수정 내용을 말하고 명령으로 기록하세요. `data/`와 `problems/`는 함께 백업하세요.
-학습 코드는 로컬에 저장되며 Git에 커밋·공개하는 기능은 없습니다.
+`template/cpp`와 `template/java`는 사용자가 원하는 구조와 이름으로 알고리즘 템플릿을
+직접 저장하는 공간입니다. 도구는 이 파일을 생성·수정하거나 풀이에 자동 삽입하지 않습니다.
 
-## 터미널에서 확인하기
+기존 v1 C++ 문제의 `solution.cpp`, `reviews/attempt-NNN.cpp`와 생성 문서 경로는 그대로
+보존됩니다. 새 구조로 옮기거나 복사하지 않습니다.
 
-일상 학습에서는 에이전트가 명령을 실행합니다. 직접 확인할 때는 다음을 사용할 수 있습니다.
+## 기존 데이터 전환
+
+v1 기록은 읽기 과정에서 자동 전환하지 않습니다. 먼저 변경 내용을 확인한 뒤 명시적으로
+전환합니다.
 
 ```powershell
-python scripts/study.py --help
-python scripts/study.py register "https://school.programmers.co.kr/learn/courses/30/lessons/42583"
-python scripts/study.py due
-python scripts/study.py resume
-python scripts/study.py validate
+py -3.15 scripts/study.py migrate --dry-run
+py -3.15 scripts/study.py migrate
+py -3.15 scripts/study.py validate
 ```
 
-질문 기록, 완료, 초안, 확인, 복습 결과의 JSON 예시는 [명령·입력 계약](docs/commands.md)에 있습니다.
-같은 작업을 재시도할 때는 같은 `--request-id`를 사용하여 중복을 막습니다.
-새 세션은 `resume`으로 미완료 풀이·회고·복습을 찾고, 일반 풀이에서는 이전 로그를 읽어 이어갑니다.
+전환 전 인덱스는 `data/index.v1.backup.json`에 배타적으로 보존합니다. 같은 백업이 있으면
+재사용하고 내용이 다르면 덮어쓰지 않고 중단합니다. 기존 C++ 소스와 이력은 유지됩니다.
 
-## 보호 범위와 한계
+## 보호 범위와 검증
 
-- **행동 지침:** AGENTS.md와 Skill이 질문 전 개입·정답 선공개·풀이 수정을 금지합니다.
-- **스크립트 보호:** 기존 C++는 배타적 생성 모드로 보존하며 덮어쓰기 경로를 허용하지 않습니다.
-  관리 경로 밖의 쓰기와 심볼릭 링크·junction을 거부하고, JSON을 검증한 뒤 원자적으로 교체합니다.
-  OS 잠금으로 동시 저장을 막고, 저장 후 문서 생성이 중단되면 `resume`으로 복구합니다.
-- **실제 권한 차단:** 이 프로젝트는 OS ACL이나 에이전트 샌드박스를 변경하지 않습니다.
-  쓰기 권한이 있는 다른 도구가 직접 파일을 수정하는 것까지 차단하지는 못합니다.
-  지침과 권한 경계는 서로 다릅니다. [Codex 보안 안내](https://learn.chatgpt.com/docs/security)
-
-완료·확인 발화와 자연어 힌트 수준은 에이전트가 올바르게 해석해야 합니다.
-스크립트는 입력된 단계·상태·출처를 검증하지만 실제 대화의 진위나 풀이 정답을 판정하지 않습니다.
-프로그래머스 제출과 C++ 테스트 실행을 자동화하지 않으며, 실행 결과와 사용자 보고를 구분해 기록합니다.
-
-## 검증
+- C++·Java 풀이와 복습 소스는 학습자가 작성합니다. 스크립트는 빈 시작 파일만 배타적으로
+  생성하며 기존 파일을 덮어쓰지 않습니다.
+- JSON 이력이 저장 원본이고 Markdown은 생성 결과입니다. Markdown을 직접 수정한 내용은
+  다음 동기화에서 보존되지 않으므로 상태 변경은 `study.py`를 사용합니다. `data/`와
+  `problems/`는 함께 백업합니다.
+- 인덱스는 엄격한 상태 검증과 중복 JSON 키·NaN 거부를 거친 뒤 저장합니다. OS 파일 잠금으로
+  동시 변경을 막고 같은 폴더의 임시 파일을 원자적으로 교체합니다. 인덱스 저장 뒤 문서 생성만
+  실패하면 `resume`으로 복구합니다.
+- 프로젝트는 OS ACL이나 에이전트 샌드박스를 변경하지 않습니다. 쓰기 권한이 있는 다른
+  도구의 직접 수정을 막는 보안 경계는 아닙니다.
+- 프로그래머스 제출과 소스 실행을 자동화하지 않습니다. 실행 결과와 사용자 보고를 구분합니다.
 
 ```powershell
-python -m unittest discover -s tests -v
-python -m py_compile scripts/study.py scripts/programmers.py
+py -3.15 -m unittest discover -s tests -v
+py -3.15 -m py_compile scripts/study.py scripts/programmers.py
 ```
 
-테스트는 임시 폴더와 합성 HTML로 등록 → 질문 스냅샷 → 완료 → 회고 수정·확인 → 복습을
-확인합니다. 링크 실패·로그인·본문 누락, 중복 등록 시 코드 보존, 재실행, 연체 조회,
-실제 복습일 기준 간격, 새 세션 재개, 원자적 저장 실패·복구도 검증합니다.
-Windows에서 심볼릭 링크 생성 권한이 없으면 해당 실제 링크 테스트는 건너뜁니다.
-실제 에이전트 대화 품질과 사이트의 향후 HTML 변경은 자동 테스트가 보장하지 않습니다.
+테스트는 임시 폴더와 합성 데이터로 C++·Java 독립 상태, 기존 v1 전환, 등록부터 복습까지의
+흐름, 파일 보존과 복구를 확인합니다. 실제 학습 기록은 테스트 데이터로 사용하지 않습니다.

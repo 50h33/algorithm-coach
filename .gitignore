@@ -2,6 +2,8 @@ __pycache__/
 *.py[cod]
 .temp/
 data/.study.lock
+data/index.v1.backup.json
 .study-*.tmp
 *.exe
 *.out
+*.class
