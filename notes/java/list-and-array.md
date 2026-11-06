@@ -1,0 +1,104 @@
+# Java 리스트와 배열 변환
+
+반환 타입이 `int[]`이면 정수 기본형 배열을 만들어야 한다.
+`List<Integer>`, `Integer[]`, `int[]`는 서로 다른 타입이다.
+
+## 세 타입 구분하기
+
+| 타입 | 특징 |
+| --- | --- |
+| `List<Integer>` | Integer 값을 저장하는 리스트. ArrayList는 원소를 추가하며 크기를 늘릴 수 있음 |
+| `Integer[]` | Integer 객체를 담는 고정 길이 배열. 원소로 null을 가질 수 있음 |
+| `int[]` | int 기본형을 담는 고정 길이 배열. 새 배열의 원소는 0으로 초기화 |
+
+Map과 List의 제네릭에 Integer를 쓰는 이유는 [타입과 문자열 변환](type-conversion.md)에 정리되어 있다.
+
+## toArray는 int[]를 만들지 않는다
+
+```java
+// import java.util.*;
+
+List<Integer> values = new ArrayList<>();
+values.add(10);
+values.add(20);
+
+Integer[] boxed = values.toArray(new Integer[0]); // {10, 20}
+// int[] numbers = values.toArray(new Integer[0]); // 타입 불일치
+```
+
+`toArray(new Integer[0])`는 Integer[] 타입을 지정한다.
+리스트에 원소가 있으면 필요한 길이의 배열을 만들어 반환하므로 결과가 길이 0인 배열이라는 뜻은 아니다.
+
+Integer 값 하나를 int로 언박싱할 수 있어도 Integer[] 전체가 int[]로 자동 변환되지는 않는다.
+
+## 이미 있는 리스트를 int[]로 변환하기
+
+### Stream 사용
+
+```java
+// values는 위 예제의 List<Integer>
+int[] numbers = values.stream()
+        .mapToInt(Integer::intValue)
+        .toArray();
+// {10, 20}
+```
+
+처리 순서는 다음과 같다.
+
+1. `stream()`: 리스트 원소를 `Stream<Integer>`로 읽는다.
+2. `mapToInt(Integer::intValue)`: 각 Integer에서 int 값을 꺼내 IntStream으로 바꾼다.
+3. `toArray()`: IntStream의 값으로 int[]를 만든다.
+
+`Integer::intValue`는 `value -> value.intValue()`와 같은 역할을 한다.
+리스트에 null이 있으면 값을 꺼내는 과정에서 예외가 발생한다.
+
+### 반복문 사용
+
+Stream 없이 원소를 하나씩 배열에 복사할 수도 있다.
+
+```java
+int[] numbers = new int[values.size()];
+int index = 0;
+
+for (int value : values) {
+    numbers[index++] = value;
+}
+```
+
+이 경우에도 원소가 null이면 언박싱할 수 없다.
+
+## 결과 개수를 알면 배열에 바로 저장하기
+
+반환할 값의 개수를 미리 알면 중간 List 없이 int[]를 만들 수 있다.
+다음 예제는 Map의 값마다 하나의 결과를 만드는 경우다.
+
+```java
+// import java.util.*;
+
+Map<String, Integer> totals = new TreeMap<>();
+totals.put("banana", 20);
+totals.put("apple", 10);
+
+int[] answer = new int[totals.size()];
+int index = 0;
+
+for (int total : totals.values()) {
+    answer[index++] = total;
+}
+// answer = {10, 20}
+```
+
+`answer[index++]`는 현재 index 위치에 저장한 뒤 index를 1 증가시킨다.
+반환 타입이 int[]인 메서드에서는 채운 배열을 `return answer;`로 반환하면 된다.
+
+Map 항목당 결과가 하나일 때만 Map의 size를 그대로 결과 길이로 쓸 수 있다.
+필터링으로 일부 항목을 제외한다면 실제 결과 개수에 맞춰 크기를 정해야 한다.
+배열을 채우는 순서는 원본 자료구조의 순회 순서이므로, 출력 순서가 중요하면
+[Map 정렬 방식](map.md)도 확인한다.
+
+| 상황 | 선택 |
+| --- | --- |
+| 결과 개수를 미리 알고 int[]가 필요함 | 처음부터 int[] 생성 |
+| 결과 개수가 가변적임 | `ArrayList<Integer>`에 모은 뒤 변환 |
+| 이미 `List<Integer>`가 있음 | Stream 또는 반복문으로 int[] 변환 |
+| Integer[] 자체가 필요함 | toArray(new Integer[0]) |
