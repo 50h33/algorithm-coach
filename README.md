@@ -28,6 +28,13 @@ C++·Java 코딩테스트를 공부하며 질문한 내용과 외부에서 받�
 - [Java 정수 나눗셈과 올림](notes/java/integer-division.md)
 - [Java 리스트와 배열 변환](notes/java/list-and-array.md)
 
+## 코딩테스트 준비
+
+시험 대비 유형, 추천 문제, 학습 계획은 루트의 `preparation/`에 정리합니다.
+`notes/`에는 공부하면서 새로 알게 된 개념·문법·API를 정리합니다.
+
+- [소프티어 부트캠프 대비](preparation/softeer-bootcamp.md)
+
 ## 파일 구조
 
 ```text
@@ -38,6 +45,8 @@ algorithm-coach/
 ├─ notes/
 │  ├─ README.md
 │  └─ java/
+├─ preparation/
+│  └─ softeer-bootcamp.md
 └─ template/
    ├─ README.md
    ├─ cpp/
