@@ -12,3 +12,12 @@
 | [정수 나눗셈과 올림](java/integer-division.md) | ceil, floor, round, 형변환 위치, 정수식 올림, 경계조건 |
 | [리스트와 배열 변환](java/list-and-array.md) | `List<Integer>`, `Integer[]`, `int[]`, Stream 변환, 배열 직접 채우기 |
 | [그래프 인접 리스트](java/adjacency-list.md) | `List<List<Integer>>`, 초기화, 연결 추가, 이웃 순회, 방향 구분 |
+| [문자열 접근과 문자 비교](java/string-and-char.md) | `charAt`, `indexOf`, 배열 접근, `char`의 `==`, `String`의 `equals` |
+| [반환값과 재귀 호출](java/recursion-and-return.md) | 반환값 저장, 호출별 지역 변수, 재귀 이후 실행, 처리 범위와 중복 집계 |
+| [조건문과 반복문의 처리 순서](java/control-flow.md) | `if`·`else if`, 조건 우선순위, 상태 갱신 시점, 반복문 미실행과 마지막 처리 |
+
+## 알고리즘
+
+| 주제 | 내용 |
+| --- | --- |
+| [순차 탐색과 카운트 차이](algorithms/linear-scan.md) | 두 횟수의 차이, 구간 시작 시 집계, 마지막 구간, 시간·공간 복잡도 |
