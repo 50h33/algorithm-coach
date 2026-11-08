@@ -11,3 +11,4 @@
 | [타입과 문자열 변환](java/type-conversion.md) | int와 Integer, 제네릭, parseInt, 숫자 문자, 시간 문자열 |
 | [정수 나눗셈과 올림](java/integer-division.md) | ceil, floor, round, 형변환 위치, 정수식 올림, 경계조건 |
 | [리스트와 배열 변환](java/list-and-array.md) | `List<Integer>`, `Integer[]`, `int[]`, Stream 변환, 배열 직접 채우기 |
+| [그래프 인접 리스트](java/adjacency-list.md) | `List<List<Integer>>`, 초기화, 연결 추가, 이웃 순회, 방향 구분 |
