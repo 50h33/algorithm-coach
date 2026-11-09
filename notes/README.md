@@ -14,9 +14,9 @@
 | [리스트와 배열 변환](java/list-and-array.md) | `List<Integer>`, `Integer[]`, `int[]`, length·length()·size(), Arrays.fill, 인덱스, Stream 변환, 배열 직접 채우기 |
 | [그래프 인접 리스트](java/adjacency-list.md) | `List<List<Integer>>`, 초기화, 연결 추가, 이웃 순회, 방향 구분 |
 | [문자열 접근과 문자 비교](java/string-and-char.md) | `charAt`, `indexOf`, `toCharArray`, 향상된 for문, `char`의 `==`, `String`의 `equals` |
-| [스택과 큐](java/stack-and-queue.md) | LIFO·FIFO, Deque, push·pop·peek·isEmpty, 인접한 같은 값 제거 |
+| [스택과 큐](java/stack-and-queue.md) | LIFO·FIFO, Deque, push·pop·peek·isEmpty, 인덱스 저장, 인접한 같은 값 제거 |
 | [반환값과 재귀 호출](java/recursion-and-return.md) | 반환값 저장, 호출별 지역 변수, 재귀 이후 실행, 처리 범위와 중복 집계 |
-| [조건문과 반복문의 처리 순서](java/control-flow.md) | `if`·`else if`, 조건 우선순위, 상태 갱신 시점, 빈 컬렉션과 최댓값 초기화, 마지막 처리 |
+| [조건문과 반복문의 처리 순서](java/control-flow.md) | `if`·`else if`·`while`, continue·break, 조건 우선순위, 상태 갱신 시점, 빈 컬렉션과 최댓값 초기화, 마지막 처리 |
 
 ## 알고리즘
 
@@ -25,3 +25,4 @@
 | [순차 탐색과 카운트 차이](algorithms/linear-scan.md) | 두 횟수의 차이, 대상별 차이 비교, 구간 시작 시 집계, 마지막 구간, 시간·공간 복잡도 |
 | [BFS와 거리 제한 탐색](algorithms/bfs.md) | BFS·DFS 선택, 장애물과 도달 가능성, 거리 배열과 방문 표시, 좌표 구분, 탐색 범위 제한 |
 | [동적 계획법의 상태 전이와 계산 순서](algorithms/dynamic-programming.md) | DP 상태 정의, 이동 조건, 의존 관계에 따른 순회, 시작 상태 초기화 |
+| [단조 스택](algorithms/monotonic-stack.md) | 대기 인덱스 관리, 여러 원소 처리, 같은 값 비교, 가장 가까운 큰 값, 전체 O(n) 분석 |

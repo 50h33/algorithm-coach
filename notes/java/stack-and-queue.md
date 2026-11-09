@@ -57,6 +57,36 @@ char second = queue.poll(); // 'b'
 서로 다른 두 원소가 같은 값이라는 뜻은 아니다.
 이 상태에서 `pop()`을 두 번 호출하면 값이 다른 두 원소까지 제거할 수 있다.
 
+## 스택에 값 대신 인덱스 저장하기
+
+나중에 원래 위치의 결과를 갱신해야 한다면 `Deque<Integer>`에 배열의 인덱스를 저장한다.
+스택에 무엇을 넣었는지에 따라 `peek()`와 `pop()`의 반환값을 해석해야 한다.
+
+| 표현 | 인덱스를 저장한 스택에서의 의미 |
+| --- | --- |
+| `stack.peek()` | 맨 위에 저장된 인덱스 |
+| `numbers[stack.peek()]` | 그 인덱스에 있는 원소 값 |
+| `stack.pop()` | 맨 위 인덱스를 제거하고 반환 |
+| `answer[index]` | 해당 위치에 기록할 결과 |
+
+```java
+int[] numbers = {4, 7};
+int[] answer = new int[numbers.length];
+Deque<Integer> stack = new ArrayDeque<>();
+stack.push(0);
+
+int index = stack.pop();
+answer[index] = numbers[1]; // answer[0] = 7
+```
+
+`pop()`의 반환값을 사용하면 `peek()`로 위치를 읽고 별도로 `pop()`하는 동작을 합칠 수 있다.
+숫자의 대소를 비교할 때는 `numbers[i]`와 `numbers[stack.peek()]`를 비교하고,
+결과를 기록할 때는 스택에서 꺼낸 인덱스를 그대로 `answer`의 위치로 사용한다.
+`answer[numbers[index]]`는 원소 값을 위치로 사용하므로 다른 칸을 수정하거나 범위를 벗어날 수 있다.
+
+이 방식을 활용해 아직 답을 찾지 못한 인덱스를 관리하는 원리는
+[단조 스택](../algorithms/monotonic-stack.md)에 정리되어 있다.
+
 ## 인접한 같은 값을 제거할 때의 스택 상태
 
 문자를 왼쪽부터 읽으며 스택에 **지금까지 읽은 부분에서 짝을 제거하고 남은 문자**를 담는다.
