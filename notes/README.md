@@ -9,11 +9,12 @@
 | --- | --- |
 | [Map 조회와 누적 및 정렬](java/map.md) | import, containsKey, put, getOrDefault, merge, entrySet, List·Set·Map 값, computeIfAbsent, TreeMap |
 | [Set 선언과 중복 처리](java/set.md) | HashSet, contains, add 반환값, 중복 제거와 집계 |
-| [타입과 문자열 변환](java/type-conversion.md) | int와 Integer, 제네릭, parseInt, 숫자 문자, 시간 문자열 |
+| [타입과 문자열 변환](java/type-conversion.md) | int·Integer, char·Character, 제네릭, 박싱·언박싱, parseInt, 숫자 문자, 시간 문자열 |
 | [정수 나눗셈과 올림](java/integer-division.md) | ceil, floor, round, 형변환 위치, 정수식 올림, 경계조건 |
 | [리스트와 배열 변환](java/list-and-array.md) | `List<Integer>`, `Integer[]`, `int[]`, length·length()·size(), Arrays.fill, 인덱스, Stream 변환, 배열 직접 채우기 |
 | [그래프 인접 리스트](java/adjacency-list.md) | `List<List<Integer>>`, 초기화, 연결 추가, 이웃 순회, 방향 구분 |
-| [문자열 접근과 문자 비교](java/string-and-char.md) | `charAt`, `indexOf`, 배열 접근, `char`의 `==`, `String`의 `equals` |
+| [문자열 접근과 문자 비교](java/string-and-char.md) | `charAt`, `indexOf`, `toCharArray`, 향상된 for문, `char`의 `==`, `String`의 `equals` |
+| [스택과 큐](java/stack-and-queue.md) | LIFO·FIFO, Deque, push·pop·peek·isEmpty, 인접한 같은 값 제거 |
 | [반환값과 재귀 호출](java/recursion-and-return.md) | 반환값 저장, 호출별 지역 변수, 재귀 이후 실행, 처리 범위와 중복 집계 |
 | [조건문과 반복문의 처리 순서](java/control-flow.md) | `if`·`else if`, 조건 우선순위, 상태 갱신 시점, 빈 컬렉션과 최댓값 초기화, 마지막 처리 |
 

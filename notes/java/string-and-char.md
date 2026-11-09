@@ -17,6 +17,30 @@ char value = letters[1]; // 배열에는 [] 사용: 'a'
 빈 문자열에는 유효한 문자 인덱스가 없다. 범위를 벗어난 `charAt` 호출은 예외를 발생시킨다.
 `array required, but String found`는 배열 접근 문법을 String에 사용했다는 뜻이다.
 
+## 문자열을 향상된 for문으로 순회하기
+
+향상된 for문은 배열 또는 `Iterable`을 구현한 객체를 순회한다.
+`String`은 둘 다 아니므로 `for (char c : s)`는 컴파일 오류가 발생한다.
+`toCharArray()`로 `char[]` 배열을 만들면 문자 단위로 순회할 수 있다.
+
+```java
+String s = "cat";
+for (char c : s.toCharArray()) {
+    System.out.println(c); // c, a, t를 한 줄씩 출력
+}
+```
+
+`toCharArray()`는 문자열 내용을 담은 새 배열을 만든다.
+길이가 n이면 배열 생성에 `O(n)` 시간과 추가 공간이 든다.
+배열을 만들 필요가 없다면 인덱스와 `charAt()`으로 순회할 수도 있다.
+
+```java
+for (int i = 0; i < s.length(); i++) {
+    char c = s.charAt(i);
+    System.out.println(c);
+}
+```
+
 ## 문자나 문자열의 위치 찾기: indexOf
 
 `charAt`은 인덱스로 문자를 가져오고, `indexOf`는 찾을 값이 처음 등장하는 위치를 반환한다.

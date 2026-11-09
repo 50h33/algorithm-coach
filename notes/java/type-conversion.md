@@ -30,6 +30,26 @@ Integer missing = null;
 // int number = missing; // 실행 시 NullPointerException
 ```
 
+## char와 Character
+
+`char`는 문자 기본형이고 `Character`는 문자를 감싸는 래퍼 클래스다.
+위의 제네릭 규칙은 문자에도 적용되므로 `Deque<char>` 대신 `Deque<Character>`를 쓴다.
+`required: reference, found: char`는 참조 타입이 필요한 자리에 기본형을 넣었다는 뜻이다.
+
+```java
+// import java.util.*;
+Deque<Character> stack = new ArrayDeque<>();
+char letter = 'a';
+stack.push(letter);        // char -> Character: 오토박싱
+char top = stack.peek();   // Character -> char: 언박싱
+boolean same = stack.peek() == letter; // char와 비교하므로 언박싱 후 문자 값 비교
+```
+
+빈 스택의 `peek()`는 `null`을 반환한다. 이를 `char`로 받거나 `char`와 비교하면
+언박싱 중 `NullPointerException`이 발생하므로 먼저 비어 있는지 확인한다.
+양쪽이 모두 `Character`인 경우의 `==`는 객체 참조 비교이므로 문자 값 비교와 구분한다.
+스택 메서드의 동작은 [스택과 큐](stack-and-queue.md)를 참고한다.
+
 ## 문자열과 숫자 변환
 
 | 변환 | 코드 | 결과 |
