@@ -57,6 +57,9 @@ counts.merge("apple", 3, Integer::sum); // 5
 이 예제의 `Integer::sum`은 두 정수를 더하는 함수다.
 `(oldValue, addedValue) -> oldValue + addedValue`로 써도 같은 역할을 한다.
 
+호출할 때마다 1씩 세려면 두 번째 인자로 `1`을 전달한다. 반복문 밖에서 선언한
+`num`을 `++num`으로 전달하면 반복마다 1, 2, 3, …을 더하므로 빈도수와 달라진다.
+
 ### getOrDefault와 put
 
 ```java
@@ -96,8 +99,64 @@ for (Map.Entry<String, Integer> entry : map.entrySet()) {
 ```
 
 `Map.Entry`는 키·값 한 쌍이다. 이 예제처럼 값에 null이 없을 때는 `int`로 받아 사용할 수 있다.
+`Map.Entry`는 타입 이름이므로 변수 이름을 붙인 `map.Entry`로 쓰지 않는다.
+순회할 항목 집합을 반환하는 메서드 이름은 `entrySet()`이며 `entry()`가 아니다.
 순회에 필요한 정보에 맞춰 `values()`, `keySet()`, `entrySet()`을 고른다.
 HashMap 예제의 출력 순서는 정해져 있지 않다.
+
+## 값으로 List나 Set 저장하기
+
+키 하나에 여러 값을 연결하려면 값 타입에 컬렉션을 지정한다.
+
+```java
+Map<String, List<String>> groups = new HashMap<>();
+String team = "teamA";
+
+if (!groups.containsKey(team)) {
+    groups.put(team, new ArrayList<>());
+}
+groups.get(team).add("철수");
+groups.get(team).add("영희");
+// groups.get("teamA")는 [철수, 영희]
+```
+
+Java Map은 `groups[team]`으로 접근할 수 없다. `get(team)`으로 리스트를 꺼낸 뒤
+그 리스트의 `add()`를 호출한다. `[]`는 배열 접근 문법이다.
+키가 없으면 `get()`은 null을 반환하므로 이어서 `add()`하거나 향상된 for문으로 순회하면
+`NullPointerException`이 발생한다.
+
+`containsKey()`로 확인한 키와 `put()` 및 `get()`에 사용하는 키를 일치시킨다.
+이미 존재하는 키에 `put(key, new ArrayList<>())`를 호출하면 기존 리스트가 교체된다.
+
+생성과 조회는 `computeIfAbsent()`로 합칠 수 있다.
+
+```java
+groups.computeIfAbsent("teamA", key -> new ArrayList<>()).add("민수");
+```
+
+키가 없거나 값이 null이면 람다로 리스트를 만들어 저장하고 반환한다.
+기존 리스트가 있으면 그 리스트를 반환한다. 이 예제의 람다 매개변수 `key`는 조회한 키다.
+
+중복 원소를 허용하지 않으려면 값 타입을 `Set<String>`으로 지정한다.
+
+```java
+Map<String, Set<String>> members = new HashMap<>();
+members.put("teamA", new HashSet<>());
+members.get("teamA").add("철수");
+
+members.containsKey("teamA");          // Map의 키 존재 여부: true
+members.get("teamA").contains("철수"); // Set의 원소 존재 여부: true
+```
+
+List는 중복을 허용하고 Set은 중복을 제거한다. 중복 제거와 카운트를 함께 처리할 때의 주의점은
+[Set 선언과 중복 처리](set.md)를 참고한다.
+
+## 여러 Map에서 키의 의미 맞추기
+
+한 Map에서 꺼낸 키를 다른 Map의 조회에 쓰려면 두 Map의 키가 같은 대상을 뜻하는지 확인한다.
+예를 들어 `부서 → 인원수`에서 꺼낸 부서명은 `부서 → 구성원 목록`을 조회할 때 사용할 수 있지만,
+`직원 → 소속 부서`의 키로 사용하면 해당 키가 없어 null이 나올 수 있다.
+관계의 방향을 먼저 정하고 저장·조회에서 일관되게 사용한다.
 
 ## 키 순서대로 순회하기
 

@@ -13,6 +13,25 @@
 
 Map과 List의 제네릭에 Integer를 쓰는 이유는 [타입과 문자열 변환](type-conversion.md)에 정리되어 있다.
 
+## 배열 길이와 인덱스 범위
+
+```java
+int[] empty = {};       // 길이 0: empty[0]도 접근 불가
+int[] numbers = new int[4]; // 길이 4: {0, 0, 0, 0}
+
+for (int i = 0; i < numbers.length; i++) {
+    numbers[i] = i;
+}
+```
+
+길이가 N인 배열의 유효한 인덱스는 0부터 N - 1까지다. 반복 조건을 `i <= numbers.length`로
+쓰면 마지막에 인덱스 N에 접근하므로 `ArrayIndexOutOfBoundsException`이 발생한다.
+`Index 4 out of bounds for length 4`는 길이 4인 배열의 인덱스 4에 접근했다는 뜻이다.
+`Index 0 out of bounds for length 0`은 빈 배열의 첫 칸에 접근했다는 뜻이다.
+
+배열은 원소를 대입하거나 증가시켜도 길이가 늘어나지 않는다. 결과가 사용자마다 하나씩 필요하면
+사용자 수만큼 배열을 생성하는 등, 저장할 결과 개수에 맞춰 길이를 지정한다.
+
 ## toArray는 int[]를 만들지 않는다
 
 ```java
