@@ -5,6 +5,17 @@ Map은 키 하나에 값 하나를 연결하는 자료구조다. 키별 개수�
 
 ## 선언과 기본 메서드
 
+`Map`과 `HashMap`은 `java.util` 패키지에 있다. 파일 맨 위, 클래스 선언 전에
+`import java.util.*;`를 쓰거나 필요한 타입을 각각 가져온다.
+
+```java
+import java.util.Map;
+import java.util.HashMap;
+```
+
+import 없이 타입 이름만 쓰면 `cannot find symbol` 컴파일 오류가 발생할 수 있다.
+이 경우에는 테스트 실행 전에 컴파일에서 멈춘 것이므로 알고리즘의 정답 여부는 아직 판단할 수 없다.
+
 ```java
 Map<String, Integer> map = new HashMap<>();
 map.put("apple", 10);
@@ -22,6 +33,9 @@ map.put("banana", 20);
 | 키 존재 확인 | `map.containsKey(key)` | 키가 있으면 true |
 | 삭제 | `map.remove(key)` | 키와 연결된 값을 제거 |
 | 항목 개수 | `map.size()` | 키·값 쌍의 개수 |
+
+`Map`에는 `contains()`가 없다. 키를 확인할 때는 `containsKey()`를 사용한다.
+List나 Set에서 원소를 확인하는 `contains()`와 구분한다.
 
 `getOrDefault()`는 조회만 하며 기본값을 Map에 저장하지 않는다.
 키가 있지만 값이 `null`인 경우에는 기본값 대신 `null`을 반환한다.
@@ -150,6 +164,47 @@ members.get("teamA").contains("철수"); // Set의 원소 존재 여부: true
 
 List는 중복을 허용하고 Set은 중복을 제거한다. 중복 제거와 카운트를 함께 처리할 때의 주의점은
 [Set 선언과 중복 처리](set.md)를 참고한다.
+
+## 값으로 Map 저장하기: 두 키로 횟수 집계하기
+
+`Map<String, Map<String, Integer>>`는 바깥 키로 내부 Map을 찾고,
+안쪽 키로 횟수를 찾는 구조다. 예를 들어 `출발지 → 도착지 → 이동 횟수`를 표현할 수 있다.
+
+```java
+Map<String, Map<String, Integer>> counts = new HashMap<>();
+String[] records = {"A B", "A C", "A C"};
+
+for (String record : records) {
+    String[] parts = record.split(" ");
+    String from = parts[0];
+    String to = parts[1];
+    if (!counts.containsKey(from)) {
+        counts.put(from, new HashMap<>());
+    }
+    counts.get(from).merge(to, 1, Integer::sum);
+}
+// counts.get("A")에는 B=1, C=2가 저장됨
+```
+
+내부 Map은 바깥 키가 처음 등장할 때만 생성한다. 반복마다 무조건
+`counts.put(from, new HashMap<>())`를 호출하면 기존 내부 Map이 교체되어 이전 기록이 사라진다.
+위 예제에서는 마지막 기록만 남아 `A`의 내부 Map에 `C=1`만 저장된다.
+뒤에서 `merge()`를 사용해도 그 전에 Map을 교체하면 누적할 수 없다.
+
+조회할 때도 두 단계의 누락을 구분한다.
+
+```java
+int count = 0;
+if (counts.containsKey("A")) {
+    count = counts.get("A").getOrDefault("D", 0);
+}
+// A가 없거나 A의 내부 Map에 D가 없으면 count는 0
+```
+
+바깥 키가 없으면 첫 번째 `get()`이 null이므로 이어서 내부 Map의 메서드를 호출할 수 없다.
+바깥 키가 있어도 안쪽 키가 있다는 보장은 없다. 내부의 `get()`이 null을 반환하면
+이를 `int`로 받는 과정에서도 예외가 발생하므로 기본값을 지정한다.
+이 예제처럼 내부 Map과 횟수에 null을 저장하지 않는 경우를 전제로 한다.
 
 ## 여러 Map에서 키의 의미 맞추기
 

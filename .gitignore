@@ -1,6 +1,7 @@
 __pycache__/
 *.py[cod]
 .temp/
+.playwright-mcp/
 *.exe
 *.out
 *.class
