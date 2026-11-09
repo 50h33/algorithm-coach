@@ -32,6 +32,50 @@ for (int i = 0; i < numbers.length; i++) {
 배열은 원소를 대입하거나 증가시켜도 길이가 늘어나지 않는다. 결과가 사용자마다 하나씩 필요하면
 사용자 수만큼 배열을 생성하는 등, 저장할 결과 개수에 맞춰 길이를 지정한다.
 
+## length, length(), size() 구분
+
+| 대상 | 크기 확인 | 형태 |
+| --- | --- | --- |
+| 배열 | `array.length` | 필드: 괄호 없음 |
+| String | `text.length()` | 메서드 |
+| List, Set, Map | `collection.size()` | 메서드 |
+
+배열에 `length()`를 호출하면 해당 메서드가 없으므로 `cannot find symbol` 컴파일 오류가 난다.
+배열의 원소가 문자열이어도 배열 자체의 길이는 `length`로 확인한다.
+
+```java
+String[][] groups = {{"abc", "de"}, {"f"}};
+int groupCount = groups.length;       // 2: 바깥 배열 길이
+int itemCount = groups[0].length;     // 2: 첫 번째 내부 배열 길이
+int textLength = groups[0][0].length(); // 3: 문자열 길이
+int[] result = new int[groups.length]; // 그룹마다 결과 하나
+```
+
+내부 배열의 길이는 서로 다를 수 있다. `groups[0]`이나 `groups[0][0]`에 접근하려면
+해당 원소가 존재하고 null이 아니어야 한다.
+
+## Arrays.fill로 배열 초기화하기
+
+`new int[n]`의 원소는 기본적으로 0이다. 다른 값으로 채우려면 `Arrays.fill`을 사용한다.
+이 메서드는 기존 배열의 내용을 바꾼다. `import java.util.Arrays;` 또는 `import java.util.*;`가 필요하다.
+
+```java
+int[] values = new int[3];
+Arrays.fill(values, -1); // {-1, -1, -1}
+
+int[][] dist = new int[2][3];
+for (int[] row : dist) {
+    Arrays.fill(row, -1);
+}
+dist[0][0] = 0; // 출발점만 거리 0
+```
+
+2차원 배열은 행 배열들의 배열이므로 각 행에 `fill`을 적용한다.
+`Arrays.fill(dist, -1)`로 모든 정수 칸을 채울 수는 없다.
+향상된 for문에서 `row`는 실제 행 배열을 가리키므로 행을 채우면 `dist`에도 반영된다.
+행 수가 n, 열 수가 m인 배열 전체를 채우는 시간은 `O(nm)`이다.
+거리 배열을 방문 표시로 함께 사용하는 방법은 [거리 제한 BFS](../algorithms/bfs.md)에 정리되어 있다.
+
 ## toArray는 int[]를 만들지 않는다
 
 ```java
