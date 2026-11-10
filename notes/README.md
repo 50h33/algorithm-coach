@@ -16,7 +16,7 @@
 | [문자열 접근과 문자 비교](java/string-and-char.md) | `charAt`, `indexOf`, `toCharArray`, 향상된 for문, `char`의 `==`, `String`의 `equals` |
 | [스택과 큐](java/stack-and-queue.md) | LIFO·FIFO, Deque, push·pop·peek·isEmpty, 인덱스 저장, 인접한 같은 값 제거 |
 | [반환값과 재귀 호출](java/recursion-and-return.md) | 반환값 저장, 호출별 지역 변수, 재귀 이후 실행, 처리 범위와 중복 집계, 다음 처리 인덱스, 종료 시점과 정답 판정 |
-| [조건문과 반복문의 처리 순서](java/control-flow.md) | `if`·`else if`·`while`, continue·break, 조건 우선순위, 상태 갱신 시점, 빈 컬렉션과 최댓값 초기화, 마지막 처리 |
+| [조건문과 반복문의 처리 순서](java/control-flow.md) | `if`·`else if`·`while`, boolean 조건과 후위 감소, continue·break와 중첩 반복, 상태 갱신 시점, 빈 컬렉션과 최댓값 초기화, 마지막 처리 |
 
 ## 알고리즘
 
@@ -26,3 +26,4 @@
 | [BFS와 거리 제한 탐색](algorithms/bfs.md) | BFS·DFS 선택, 장애물과 도달 가능성, 거리 배열과 방문 표시, 좌표 구분, 탐색 범위 제한 |
 | [동적 계획법의 상태 전이와 계산 순서](algorithms/dynamic-programming.md) | DP 상태 정의, 이동 조건, 의존 관계에 따른 순회, 시작 상태 초기화 |
 | [단조 스택](algorithms/monotonic-stack.md) | 대기 인덱스 관리, 여러 원소 처리, 같은 값 비교, 가장 가까운 큰 값, 전체 O(n) 분석 |
+| [격자 시뮬레이션과 상태 갱신](algorithms/simulation.md) | 격자 크기, 경로 검사, 명령 전체 취소, 시작 상태 복구와 임시 상태 확정 |
