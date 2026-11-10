@@ -78,3 +78,27 @@ boolean sameObject = left == right;   // false
 ```
 
 숫자 문자와 숫자 사이의 변환은 [타입과 문자열 변환](type-conversion.md)에 정리되어 있다.
+
+## split의 구분자는 정규표현식이다
+
+`String.split()`은 전달한 문자열을 정규표현식으로 해석한다.
+정규표현식에서 `.`은 기본적으로 줄바꿈을 제외한 아무 문자 하나와 일치한다.
+따라서 날짜를 마침표로 나누려면 `split("\\.")`로 작성한다.
+
+```java
+String date = "2022.05.19";
+String[] parts = date.split("\\."); // {"2022", "05", "19"}
+int year = Integer.parseInt(parts[0]); // 2022
+```
+
+정규표현식의 `\.`은 실제 마침표를 뜻한다. Java 문자열 안에서는 역슬래시 하나를
+`\\`로 적어야 하므로 코드에서는 `"\\."`가 된다.
+
+```java
+String[] wrong = "2022.05.19".split("."); // 길이 0
+// wrong[0]에 접근하면 ArrayIndexOutOfBoundsException
+```
+
+위 입력에서 `.`은 모든 문자와 일치한다. `split()`은 기본적으로 결과 끝의 빈 문자열을
+제거하므로 남는 원소가 없다. 배열 길이가 0이면 첫 원소도 읽을 수 없다.
+인덱스 범위는 [리스트와 배열](list-and-array.md)에 정리되어 있다.

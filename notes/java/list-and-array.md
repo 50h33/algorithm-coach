@@ -108,6 +108,8 @@ Integer[] boxed = values.toArray(new Integer[0]); // {10, 20}
 리스트에 원소가 있으면 필요한 길이의 배열을 만들어 반환하므로 결과가 길이 0인 배열이라는 뜻은 아니다.
 
 Integer 값 하나를 int로 언박싱할 수 있어도 Integer[] 전체가 int[]로 자동 변환되지는 않는다.
+`values.toArray(new int[0])`도 컴파일 오류다. 이 메서드의 제네릭 `T[]`에는
+`Integer[]` 같은 참조형 원소의 배열이 필요하며, `int[]`를 전달할 수 없다.
 
 ## 이미 있는 리스트를 int[]로 변환하기
 
@@ -128,6 +130,7 @@ int[] numbers = values.stream()
 3. `toArray()`: IntStream의 값으로 int[]를 만든다.
 
 `Integer::intValue`는 `value -> value.intValue()`와 같은 역할을 한다.
+`mapToInt(value -> value)`로 써도 반환하는 Integer가 int로 자동 언박싱된다.
 리스트에 null이 있으면 값을 꺼내는 과정에서 예외가 발생한다.
 
 ### 반복문 사용
@@ -180,3 +183,29 @@ Map 항목당 결과가 하나일 때만 Map의 size를 그대로 결과 길이�
 | 결과 개수가 가변적임 | `ArrayList<Integer>`에 모은 뒤 변환 |
 | 이미 `List<Integer>`가 있음 | Stream 또는 반복문으로 int[] 변환 |
 | Integer[] 자체가 필요함 | toArray(new Integer[0]) |
+
+## 결과의 최대 개수만 알 때: Arrays.copyOf
+
+필터링 결과의 정확한 개수를 몰라도 최대 개수를 알면 배열에 직접 저장할 수 있다.
+배열의 길이와 실제 저장한 개수를 따로 관리한다.
+
+```java
+// import java.util.Arrays;
+int[] values = {1, 2, 3, 4};
+int[] answer = new int[values.length];
+int count = 0;
+
+for (int value : values) {
+    if (value % 2 == 1) {
+        answer[count] = value;
+        count++;
+    }
+}
+// answer는 {1, 3, 0, 0}, count는 2
+int[] result = Arrays.copyOf(answer, count); // {1, 3}
+```
+
+`Arrays.copyOf(answer, count)`는 앞에서 count개를 복사한 새 배열을 반환한다.
+원본 배열의 길이는 바뀌지 않는다. count가 0이면 빈 배열이 된다.
+값이 0인 원소를 제거하는 기능이 아니므로, 결과에 실제 0이 있어도 보존된다.
+이 방식은 `0 <= count <= answer.length`를 유지하며, 복사에 `O(count)` 시간과 공간이 든다.
