@@ -15,7 +15,7 @@
 | [그래프 인접 리스트](java/adjacency-list.md) | `List<List<Integer>>`, 초기화, 연결 추가, 이웃 순회, 방향 구분 |
 | [문자열 접근과 문자 비교](java/string-and-char.md) | `charAt`, `indexOf`, `toCharArray`, 향상된 for문, `char`의 `==`, `String`의 `equals` |
 | [스택과 큐](java/stack-and-queue.md) | LIFO·FIFO, Deque, push·pop·peek·isEmpty, 인덱스 저장, 인접한 같은 값 제거 |
-| [반환값과 재귀 호출](java/recursion-and-return.md) | 반환값 저장, 호출별 지역 변수, 재귀 이후 실행, 처리 범위와 중복 집계 |
+| [반환값과 재귀 호출](java/recursion-and-return.md) | 반환값 저장, 호출별 지역 변수, 재귀 이후 실행, 처리 범위와 중복 집계, 다음 처리 인덱스, 종료 시점과 정답 판정 |
 | [조건문과 반복문의 처리 순서](java/control-flow.md) | `if`·`else if`·`while`, continue·break, 조건 우선순위, 상태 갱신 시점, 빈 컬렉션과 최댓값 초기화, 마지막 처리 |
 
 ## 알고리즘
