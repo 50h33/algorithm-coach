@@ -5,13 +5,13 @@ C++·Java 코딩테스트를 공부하며 질문한 내용과 외부에서 받�
 
 ## 사용 방법
 
-평소 편한 편집기나 프로그래머스 웹에서 코드를 작성하면 됩니다.
+평소 편한 편집기나 프로그래머스·SWEA 웹에서 코드를 작성하면 됩니다.
 이 프로젝트의 에이전트 대화에 질문하거나, 받은 답변을 붙여 넣고 정리를 요청하세요.
 
-프로그래머스 문제 링크와 함께 “이 문제 풀어볼게”라고 말하면,
-에이전트는 짧게 응답하며 기본 코드를 자동으로 가져오거나 연습장 파일을 변경하지 않습니다.
-기본 틀 준비나 기본 코드로 초기화를 명시적으로 요청하면 해당 문제의 공식 기본 코드를 준비합니다.
-이때 지정한 언어나 최근 대화의 언어를 사용하며, 별도 정보가 없으면 Java를 사용합니다.
+문제 링크와 함께 “이 문제 풀어볼게”라고 말하면,
+에이전트는 짧게 응답하며 연습장 파일을 변경하지 않습니다.
+필요한 시작 코드는 직접 작성하거나 붙여 넣습니다. 에이전트의 기본 틀 준비 기능은 제공하지 않습니다.
+지정한 언어나 최근 대화의 언어로 코칭하며, 별도 정보가 없으면 Java를 사용합니다.
 Java는 [problem/Solution.java](problem/Solution.java), C++는 `problem/solution.cpp`를 사용합니다.
 
 `problem/`은 한 문제씩 푸는 연습장입니다. 풀이 질문을 하면 에이전트가 이 파일을 직접 읽습니다.
@@ -49,6 +49,7 @@ Java는 [problem/Solution.java](problem/Solution.java), C++는 `problem/solution
 `notes/`에는 공부하면서 새로 알게 된 개념·문법·API를 정리합니다.
 
 - [소프티어 부트캠프 대비](preparation/softeer-bootcamp.md)
+- [SSAFY 17기 전공자 Java 대비](preparation/ssafy-17-java.md)
 
 ## 파일 구조
 
@@ -62,7 +63,8 @@ algorithm-coach/
 │  ├─ java/
 │  └─ algorithms/
 ├─ preparation/
-│  └─ softeer-bootcamp.md
+│  ├─ softeer-bootcamp.md
+│  └─ ssafy-17-java.md
 ├─ problem/
 │  └─ Solution.java
 └─ template/
