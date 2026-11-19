@@ -45,11 +45,10 @@ Java는 [problem/Solution.java](problem/Solution.java), C++는 `problem/solution
 
 ## 코딩테스트 준비
 
-시험 대비 유형, 추천 문제, 학습 계획은 루트의 `preparation/`에 정리합니다.
+개인 지원처의 시험 대비 유형, 추천 문제, 학습 계획은 루트의 `preparation/`에 정리합니다.
+이 디렉토리는 Git에서 제외하는 로컬 개인 자료이며, 저장소를 복제할 때 포함되지 않습니다.
+지원처별 자료와 목록·링크는 `preparation/` 안에서만 관리합니다.
 `notes/`에는 공부하면서 새로 알게 된 개념·문법·API를 정리합니다.
-
-- [소프티어 부트캠프 대비](preparation/softeer-bootcamp.md)
-- [SSAFY 17기 전공자 Java 대비](preparation/ssafy-17-java.md)
 
 ## 파일 구조
 
@@ -62,9 +61,7 @@ algorithm-coach/
 │  ├─ README.md
 │  ├─ java/
 │  └─ algorithms/
-├─ preparation/
-│  ├─ softeer-bootcamp.md
-│  └─ ssafy-17-java.md
+├─ preparation/  # 로컬 개인 자료, Git 제외
 ├─ problem/
 │  └─ Solution.java
 └─ template/
