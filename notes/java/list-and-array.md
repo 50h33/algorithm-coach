@@ -1,9 +1,13 @@
 # Java 리스트와 배열 변환
 
+> 정리일: 26.11.07 (Git 기록 기준)
+
 반환 타입이 `int[]`이면 정수 기본형 배열을 만들어야 한다.
 `List<Integer>`, `Integer[]`, `int[]`는 서로 다른 타입이다.
 
 ## 세 타입 구분하기
+
+> 정리일: 26.11.07 (Git 기록 기준)
 
 | 타입 | 특징 |
 | --- | --- |
@@ -14,6 +18,8 @@
 Map과 List의 제네릭에 Integer를 쓰는 이유는 [타입과 문자열 변환](type-conversion.md)에 정리되어 있다.
 
 ## 배열 길이와 인덱스 범위
+
+> 정리일: 26.11.09 (Git 기록 기준)
 
 ```java
 int[] empty = {};       // 길이 0: empty[0]도 접근 불가
@@ -34,6 +40,8 @@ for (int i = 0; i < numbers.length; i++) {
 
 ## 길이, 인덱스, 원소 값 구분
 
+> 정리일: 26.11.10 (Git 기록 기준)
+
 배열의 **길이**, **인덱스**, **원소 값**은 서로 다른 정보다.
 
 ```java
@@ -48,6 +56,8 @@ int value = values[index];  // 8: 해당 위치에 저장된 값
 원소 값을 다시 인덱스로 사용하면 엉뚱한 위치를 가리키거나 배열 범위를 벗어날 수 있다.
 
 ## length, length(), size() 구분
+
+> 정리일: 26.11.09 (Git 기록 기준)
 
 | 대상 | 크기 확인 | 형태 |
 | --- | --- | --- |
@@ -71,6 +81,8 @@ int[] result = new int[groups.length]; // 그룹마다 결과 하나
 
 ## Arrays.fill로 배열 초기화하기
 
+> 정리일: 26.11.09 (Git 기록 기준)
+
 `new int[n]`의 원소는 기본적으로 0이다. 다른 값으로 채우려면 `Arrays.fill`을 사용한다.
 이 메서드는 기존 배열의 내용을 바꾼다. `import java.util.Arrays;` 또는 `import java.util.*;`가 필요하다.
 
@@ -93,6 +105,8 @@ dist[0][0] = 0; // 출발점만 거리 0
 
 ## toArray는 int[]를 만들지 않는다
 
+> 정리일: 26.11.07 (Git 기록 기준)
+
 ```java
 // import java.util.*;
 
@@ -107,6 +121,8 @@ Integer[] boxed = values.toArray(new Integer[0]); // {10, 20}
 `toArray(new Integer[0])`는 Integer[] 타입을 지정한다.
 리스트에 원소가 있으면 필요한 길이의 배열을 만들어 반환하므로 결과가 길이 0인 배열이라는 뜻은 아니다.
 
+> 정리일: 26.11.07 (Git 기록 기준) · 보강일: 26.11.10 (Git 기록 기준)
+
 Integer 값 하나를 int로 언박싱할 수 있어도 Integer[] 전체가 int[]로 자동 변환되지는 않는다.
 `values.toArray(new int[0])`도 컴파일 오류다. 이 메서드의 제네릭 `T[]`에는
 `Integer[]` 같은 참조형 원소의 배열이 필요하며, `int[]`를 전달할 수 없다.
@@ -114,6 +130,8 @@ Integer 값 하나를 int로 언박싱할 수 있어도 Integer[] 전체가 int[
 ## 이미 있는 리스트를 int[]로 변환하기
 
 ### Stream 사용
+
+> 정리일: 26.11.07 (Git 기록 기준)
 
 ```java
 // values는 위 예제의 List<Integer>
@@ -129,11 +147,15 @@ int[] numbers = values.stream()
 2. `mapToInt(Integer::intValue)`: 각 Integer에서 int 값을 꺼내 IntStream으로 바꾼다.
 3. `toArray()`: IntStream의 값으로 int[]를 만든다.
 
+> 정리일: 26.11.07 (Git 기록 기준) · 보강일: 26.11.10 (Git 기록 기준)
+
 `Integer::intValue`는 `value -> value.intValue()`와 같은 역할을 한다.
 `mapToInt(value -> value)`로 써도 반환하는 Integer가 int로 자동 언박싱된다.
 리스트에 null이 있으면 값을 꺼내는 과정에서 예외가 발생한다.
 
 ### 반복문 사용
+
+> 정리일: 26.11.07 (Git 기록 기준)
 
 Stream 없이 원소를 하나씩 배열에 복사할 수도 있다.
 
@@ -149,6 +171,8 @@ for (int value : values) {
 이 경우에도 원소가 null이면 언박싱할 수 없다.
 
 ## 결과 개수를 알면 배열에 바로 저장하기
+
+> 정리일: 26.11.07 (Git 기록 기준)
 
 반환할 값의 개수를 미리 알면 중간 List 없이 int[]를 만들 수 있다.
 다음 예제는 Map의 값마다 하나의 결과를 만드는 경우다.
@@ -185,6 +209,8 @@ Map 항목당 결과가 하나일 때만 Map의 size를 그대로 결과 길이�
 | Integer[] 자체가 필요함 | toArray(new Integer[0]) |
 
 ## 결과의 최대 개수만 알 때: Arrays.copyOf
+
+> 정리일: 26.11.10 (Git 기록 기준)
 
 필터링 결과의 정확한 개수를 몰라도 최대 개수를 알면 배열에 직접 저장할 수 있다.
 배열의 길이와 실제 저장한 개수를 따로 관리한다.

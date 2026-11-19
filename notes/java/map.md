@@ -1,9 +1,13 @@
 # Java Map 조회와 누적 및 정렬
 
+> 정리일: 26.11.07 (Git 기록 기준)
+
 Map은 키 하나에 값 하나를 연결하는 자료구조다. 키별 개수나 누적값을 저장할 때 사용할 수 있다.
 다음 예제는 파일 상단에 `import java.util.*;`를 선언한 뒤 메서드 안에서 사용하는 코드 조각이다.
 
 ## 선언과 기본 메서드
+
+> 정리일: 26.11.09 (Git 기록 기준)
 
 `Map`과 `HashMap`은 `java.util` 패키지에 있다. 파일 맨 위, 클래스 선언 전에
 `import java.util.*;`를 쓰거나 필요한 타입을 각각 가져온다.
@@ -15,6 +19,14 @@ import java.util.HashMap;
 
 import 없이 타입 이름만 쓰면 `cannot find symbol` 컴파일 오류가 발생할 수 있다.
 이 경우에는 테스트 실행 전에 컴파일에서 멈춘 것이므로 알고리즘의 정답 여부는 아직 판단할 수 없다.
+
+> 정리일: 26.11.19
+
+`import java.util.Scanner;`는 Scanner만 가져오므로 Map과 HashMap은 별도로 import해야 한다.
+같은 오류에서 `symbol: variable map`이 표시되면 변수 이름과 범위도 확인한다.
+예를 들어 `meme`로 선언하고 `map.get(...)`으로 사용하면 서로 다른 이름이므로 컴파일되지 않는다.
+
+> 정리일: 26.11.07 (Git 기록 기준)
 
 ```java
 Map<String, Integer> map = new HashMap<>();
@@ -34,8 +46,12 @@ map.put("banana", 20);
 | 삭제 | `map.remove(key)` | 키와 연결된 값을 제거 |
 | 항목 개수 | `map.size()` | 키·값 쌍의 개수 |
 
+> 정리일: 26.11.09 (Git 기록 기준)
+
 `Map`에는 `contains()`가 없다. 키를 확인할 때는 `containsKey()`를 사용한다.
 List나 Set에서 원소를 확인하는 `contains()`와 구분한다.
+
+> 정리일: 26.11.07 (Git 기록 기준)
 
 `getOrDefault()`는 조회만 하며 기본값을 Map에 저장하지 않는다.
 키가 있지만 값이 `null`인 경우에는 기본값 대신 `null`을 반환한다.
@@ -52,9 +68,17 @@ Integer empty = map.getOrDefault("empty", 0); // null
 `int value = map.get("없는 키");`처럼 `null`을 `int`로 받으면 언박싱 과정에서
 `NullPointerException`이 발생한다. 값으로 null을 저장할 수 있는 경우에는 별도 처리가 필요하다.
 
+> 정리일: 26.11.19
+
+`Math.max(map.get(key), candidate)`처럼 메서드 인자로 전달할 때도 같은 언박싱이 발생한다.
+저장된 값이 null이 아니고 후보가 음이 아닌 값이라면, 없는 키의 초기 최댓값을 0으로 두어
+`Math.max(map.getOrDefault(key, 0), candidate)`로 비교할 수 있다.
+
 ## 같은 키에 값 누적하기
 
 ### merge
+
+> 정리일: 26.11.07 (Git 기록 기준)
 
 ```java
 Map<String, Integer> counts = new HashMap<>();
@@ -71,10 +95,14 @@ counts.merge("apple", 3, Integer::sum); // 5
 이 예제의 `Integer::sum`은 두 정수를 더하는 함수다.
 `(oldValue, addedValue) -> oldValue + addedValue`로 써도 같은 역할을 한다.
 
+> 정리일: 26.11.09 (Git 기록 기준)
+
 호출할 때마다 1씩 세려면 두 번째 인자로 `1`을 전달한다. 반복문 밖에서 선언한
 `num`을 `++num`으로 전달하면 반복마다 1, 2, 3, …을 더하므로 빈도수와 달라진다.
 
 ### getOrDefault와 put
+
+> 정리일: 26.11.07 (Git 기록 기준)
 
 ```java
 Map<String, Integer> counts = new HashMap<>();
@@ -88,6 +116,8 @@ null 값을 저장하지 않는 Map에서는 두 방식 모두 빈도수를 누�
 기존 값이 null이면 이 방식의 `+ 1`에서 예외가 발생하므로 merge와 null 처리가 같지는 않다.
 
 ## 필요한 항목 순회하기
+
+> 정리일: 26.11.07 (Git 기록 기준)
 
 ```java
 Map<String, Integer> map = new HashMap<>();
@@ -112,6 +142,8 @@ for (Map.Entry<String, Integer> entry : map.entrySet()) {
 }
 ```
 
+> 정리일: 26.11.07 (Git 기록 기준) · 보강일: 26.11.09 (Git 기록 기준)
+
 `Map.Entry`는 키·값 한 쌍이다. 이 예제처럼 값에 null이 없을 때는 `int`로 받아 사용할 수 있다.
 `Map.Entry`는 타입 이름이므로 변수 이름을 붙인 `map.Entry`로 쓰지 않는다.
 순회할 항목 집합을 반환하는 메서드 이름은 `entrySet()`이며 `entry()`가 아니다.
@@ -119,6 +151,8 @@ for (Map.Entry<String, Integer> entry : map.entrySet()) {
 HashMap 예제의 출력 순서는 정해져 있지 않다.
 
 ## 값으로 List나 Set 저장하기
+
+> 정리일: 26.11.09 (Git 기록 기준)
 
 키 하나에 여러 값을 연결하려면 값 타입에 컬렉션을 지정한다.
 
@@ -133,6 +167,14 @@ groups.get(team).add("철수");
 groups.get(team).add("영희");
 // groups.get("teamA")는 [철수, 영희]
 ```
+
+> 정리일: 26.11.19
+
+`groups.containsKey("teamA")`는 키의 존재를 확인하고,
+`groups.get("teamA").contains("철수")`는 해당 리스트 안의 원소를 확인한다.
+후자는 먼저 리스트가 존재하고 null이 아닌 상태여야 한다.
+
+> 정리일: 26.11.09 (Git 기록 기준)
 
 Java Map은 `groups[team]`으로 접근할 수 없다. `get(team)`으로 리스트를 꺼낸 뒤
 그 리스트의 `add()`를 호출한다. `[]`는 배열 접근 문법이다.
@@ -166,6 +208,8 @@ List는 중복을 허용하고 Set은 중복을 제거한다. 중복 제거와 �
 [Set 선언과 중복 처리](set.md)를 참고한다.
 
 ## 값으로 Map 저장하기: 두 키로 횟수 집계하기
+
+> 정리일: 26.11.09 (Git 기록 기준)
 
 `Map<String, Map<String, Integer>>`는 바깥 키로 내부 Map을 찾고,
 안쪽 키로 횟수를 찾는 구조다. 예를 들어 `출발지 → 도착지 → 이동 횟수`를 표현할 수 있다.
@@ -208,12 +252,16 @@ if (counts.containsKey("A")) {
 
 ## 여러 Map에서 키의 의미 맞추기
 
+> 정리일: 26.11.09 (Git 기록 기준)
+
 한 Map에서 꺼낸 키를 다른 Map의 조회에 쓰려면 두 Map의 키가 같은 대상을 뜻하는지 확인한다.
 예를 들어 `부서 → 인원수`에서 꺼낸 부서명은 `부서 → 구성원 목록`을 조회할 때 사용할 수 있지만,
 `직원 → 소속 부서`의 키로 사용하면 해당 키가 없어 null이 나올 수 있다.
 관계의 방향을 먼저 정하고 저장·조회에서 일관되게 사용한다.
 
 ## 키 순서대로 순회하기
+
+> 정리일: 26.11.07 (Git 기록 기준)
 
 | 구현체 | 순회 순서 |
 | --- | --- |

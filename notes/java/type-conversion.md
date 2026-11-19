@@ -1,8 +1,12 @@
 # Java 타입과 문자열 변환
 
+> 정리일: 26.11.07 (Git 기록 기준)
+
 기본형과 객체형을 구분하고, 입력 문자열을 계산에 사용할 숫자로 바꾸는 방법을 정리한다.
 
 ## int와 Integer
+
+> 정리일: 26.11.07 (Git 기록 기준)
 
 `int`는 정수 기본형이고 `Integer`는 정수를 감싸는 래퍼 클래스다.
 Map이나 List의 제네릭 타입 인자에는 기본형을 넣을 수 없으므로 `Integer`를 쓴다.
@@ -30,7 +34,31 @@ Integer missing = null;
 // int number = missing; // 실행 시 NullPointerException
 ```
 
+## 큰 합계를 long으로 누적하기
+
+> 정리일: 26.11.19
+
+각 원소가 int 범위 안에 있어도 여러 값을 더한 합계는 int의 최댓값인 2,147,483,647을 넘을 수 있다.
+누적 결과의 범위를 기준으로 타입을 정한다. int 연산의 오버플로는 예외 없이 잘못된 값으로 이어진다.
+
+```java
+int[] amounts = {1_500_000_000, 1_500_000_000};
+long total = 0;
+for (int amount : amounts) {
+    total += amount;
+}
+// total은 3_000_000_000L
+```
+
+이 예제의 덧셈은 long인 total과 계산하므로 long 연산이다.
+반면 `long total = a + b;`에서 a와 b가 모두 int이면 덧셈을 int로 먼저 수행한다.
+중간 계산도 범위를 넘을 수 있다면 `long total = (long) a + b;`처럼 계산 전에 변환한다.
+뺄셈도 마찬가지로 `total += (long) maxValue - current;`라고 쓰면 차이부터 long으로 계산한다.
+관련 예제는 [정수 나눗셈과 올림](integer-division.md)을 참고한다.
+
 ## char와 Character
+
+> 정리일: 26.11.09 (Git 기록 기준)
 
 `char`는 문자 기본형이고 `Character`는 문자를 감싸는 래퍼 클래스다.
 위의 제네릭 규칙은 문자에도 적용되므로 `Deque<char>` 대신 `Deque<Character>`를 쓴다.
@@ -52,6 +80,8 @@ boolean same = stack.peek() == letter; // char와 비교하므로 언박싱 후 
 
 ## 문자열과 숫자 변환
 
+> 정리일: 26.11.07 (Git 기록 기준)
+
 | 변환 | 코드 | 결과 |
 | --- | --- | --- |
 | String → int | `Integer.parseInt("123")` | 123 |
@@ -70,6 +100,8 @@ parseInt는 숫자로 해석할 수 없는 문자열이나 int 범위를 벗어�
 
 ## 숫자 문자 하나 변환하기
 
+> 정리일: 26.11.07 (Git 기록 기준)
+
 ```java
 char digit = '7';
 int number = digit - '0'; // 7
@@ -85,6 +117,8 @@ char restored = (char) (value + '0'); // '7'
 문자열 전체를 숫자로 바꿀 때는 문자 뺄셈 대신 parseInt를 사용한다.
 
 ## 구분자로 나눈 시간 문자열을 분으로 변환하기
+
+> 정리일: 26.11.07 (Git 기록 기준)
 
 시간과 분을 하나의 단위로 바꾸면 시간 차이를 뺄셈으로 계산할 수 있다.
 유효한 24시간제 `HH:mm` 형식의 문자열을 전제로 한다.
